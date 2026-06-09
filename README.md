@@ -73,55 +73,5 @@ com.civicdesk
     └── security/   JwtAuthFilter
 ```
 
-Teammates' modules (`citizen/`, `servicerequest/`, `permit/`, `grievance/`, `analytics/`)
-live as siblings under `module/`.
 
-## Endpoints (10)
 
-| Method | Path                          | Access                              |
-|--------|-------------------------------|-------------------------------------|
-| POST   | `/api/v1/auth/register`       | Public — citizen self-registration  |
-| POST   | `/api/v1/auth/citizen/login`  | Public — CITIZEN only (else 403)    |
-| POST   | `/api/v1/auth/staff/login`    | Public — staff only (CITIZEN → 403); not-yet-set password → 403; suspended → 423 |
-| POST   | `/api/v1/auth/set-password`   | Public — first-time password setup (one-time per account) |
-| POST   | `/api/v1/auth/logout`         | Any authenticated user              |
-| GET    | `/api/v1/departments`         | ADMIN · DEPT_SUPERVISOR             |
-| GET    | `/api/v1/users/me`            | Any authenticated user              |
-| POST   | `/api/v1/users`               | ADMIN → DEPT_SUPERVISOR; SUPERVISOR → field staff |
-| GET    | `/api/v1/users`               | ADMIN (all) · DEPT_SUPERVISOR (own dept) |
-| PUT    | `/api/v1/users/{id}/status`   | ADMIN only                          |
-| GET    | `/api/v1/audit-logs`          | ADMIN · COMPLIANCE_OFFICER          |
-
-All responses use the standard envelope:
-`{ "success", "statusCode", "message", "data", "timestamp" }`.
-
-## Staff onboarding (set-password on first login)
-
-Admin/supervisor-created accounts are created **without a password**
-(`is_password_set = false`). The owner activates the account themselves:
-
-```
-Admin creates user (no password)         → is_password_set = false
-Staff POST /auth/staff/login             → 403 "Please set your password before logging in"
-Staff POST /auth/set-password            → validates min length, BCrypt-hashes,
-   { email, newPassword }                   sets is_password_set = true  (200)
-Staff POST /auth/staff/login again       → 200 + JWT
-```
-
-`set-password` works **once** per account (afterwards → 403, use a reset flow).
-Citizens (self-register) and the seeded admin already have `is_password_set = true`.
-
-## Departments
-
-`DataSeeder` seeds six departments on startup: **Infrastructure, Public Health,
-Licensing & Compliance, Citizen Services, Administration, Compliance & Audit**.
-When an ADMIN creates a `DEPT_SUPERVISOR`, the `departmentId` is **validated against
-the departments table** (unknown id → 400) and the department's
-`department_supervisor_id` is set to the new supervisor (one-to-one). Use
-`GET /api/v1/departments` to fetch valid department ids.
-
-## Shared with teammates
-
-Hand `Role.java` and `JwtUtil.java` to the other module owners before they start —
-the role strings and JWT claim names (`userId`, `role`, `email`) are the cross-module
-contract.
