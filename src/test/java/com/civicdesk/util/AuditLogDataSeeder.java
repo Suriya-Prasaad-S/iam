@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 // Standalone data-seeding utility for local performance testing of the audit_log table.
 // Run main() against a local/test database to bulk-load audit entries, then exercise the
-// indexed GET /auditLogs filters (userId / action / module). Mirrors CitizenDataSeeder.
+// indexed GET /audit/auditLogs filters (userId / action / module). Mirrors CitizenDataSeeder.
 //
 // auditId is the varchar primary key (app-generated ids are sequential numbers starting
 // at 10000001); to avoid colliding with those, seeded rows start from BASE_AUDIT_ID.

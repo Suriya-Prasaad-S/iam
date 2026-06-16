@@ -1,11 +1,11 @@
-package com.civicdesk.module.iam.service;
+package com.civicdesk.module.auditlog.service;
 
 import com.civicdesk.common.exception.ResourceNotFoundException;
 import com.civicdesk.common.response.PageResponse;
-import com.civicdesk.module.iam.dto.response.AuditLogResponse;
-import com.civicdesk.module.iam.entity.AuditLog;
-import com.civicdesk.module.iam.repository.AuditLogRepository;
-import com.civicdesk.module.iam.repository.spec.AuditLogSpecifications;
+import com.civicdesk.module.auditlog.dto.response.AuditLogResponse;
+import com.civicdesk.module.auditlog.entity.AuditLog;
+import com.civicdesk.module.auditlog.repository.AuditLogRepository;
+import com.civicdesk.module.auditlog.repository.spec.AuditLogSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,12 +24,25 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public void log(String userId, String action, String module, String ip) {
+        save(userId, action, module, ip);
+    }
+
+    @Override
+    public AuditLogResponse create(String userId, String action, String module, String ip) {
+        return AuditLogResponse.from(save(userId, action, module, ip));
+    }
+
+    /**
+     * Persists a single audit row. action/module are normalised to upper case so the
+     * stored value always matches the canonical enum name the GET filters compare against.
+     */
+    private AuditLog save(String userId, String action, String module, String ip) {
         AuditLog log = new AuditLog();
         log.setUserId(userId);
-        log.setAction(action);
-        log.setModule(module);
+        log.setAction(action != null ? action.trim().toUpperCase() : null);
+        log.setModule(module != null ? module.trim().toUpperCase() : null);
         log.setIpAddress(ip);
-        auditLogRepository.save(log);
+        return auditLogRepository.save(log);
     }
 
     @Override

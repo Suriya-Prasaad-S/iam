@@ -1,4 +1,4 @@
-package com.civicdesk.module.iam.enums;
+package com.civicdesk.module.auditlog.enums;
 
 public enum AuditAction {
     // IAM
