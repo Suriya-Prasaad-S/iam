@@ -13,10 +13,6 @@ import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDateTime;
 
-// columnList values match the physical (camelCase) column names — this project uses
-// PhysicalNamingStrategyStandardImpl, so columns are NOT snake_cased.
-// Indexes back the audit-log filters (by userId / action / module) and the default
-// timestamp-desc ordering, keeping queries fast as the table grows.
 @Entity
 @Table(name = "audit_log", indexes = {
     @Index(name = "idx_audit_userId",    columnList = "userId"),
@@ -26,7 +22,6 @@ import java.time.LocalDateTime;
 })
 public class AuditLog {
 
-    // Sequential numeric id rendered as a String: 10000001, 10000002, … (was a UUID).
     @Id
     @GeneratedValue(generator = "auditIdSeq")
     @GenericGenerator(

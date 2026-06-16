@@ -7,6 +7,7 @@ import com.civicdesk.module.iam.service.AuditService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,11 +22,6 @@ public class AuditLogController {
         this.auditService = auditService;
     }
 
-    /**
-     * Lists audit entries newest-first. Optional {@code userId}, {@code action} and
-     * {@code module} query params narrow the results (any combination); each maps to an
-     * indexed column on {@code audit_log}.
-     */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADM', 'CO')")
     public ResponseEntity<ApiResponse> getAuditLogs(
@@ -36,5 +32,12 @@ public class AuditLogController {
             @RequestParam(defaultValue = "20") int size) {
         PageResponse<AuditLogResponse> logs = auditService.getAll(userId, action, module, page, size);
         return ResponseEntity.ok(ApiResponse.data(logs));
+    }
+
+    @GetMapping("/{auditId}")
+    @PreAuthorize("hasAnyRole('ADM', 'CO')")
+    public ResponseEntity<ApiResponse> getAuditLogById(@PathVariable String auditId) {
+        AuditLogResponse log = auditService.getById(auditId);
+        return ResponseEntity.ok(ApiResponse.data(log));
     }
 }

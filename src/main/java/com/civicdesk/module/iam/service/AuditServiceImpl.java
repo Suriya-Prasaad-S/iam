@@ -1,5 +1,6 @@
 package com.civicdesk.module.iam.service;
 
+import com.civicdesk.common.exception.ResourceNotFoundException;
 import com.civicdesk.common.response.PageResponse;
 import com.civicdesk.module.iam.dto.response.AuditLogResponse;
 import com.civicdesk.module.iam.entity.AuditLog;
@@ -33,8 +34,6 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public PageResponse<AuditLogResponse> getAll(String userId, String action, String module, int page, int size) {
-        // Compose only the filters that were supplied; newest-first ordering is applied
-        // via the pageable so it works alongside the optional specification.
         Specification<AuditLog> spec = Specification.where(null);
         if (userId != null && !userId.isBlank()) {
             spec = spec.and(AuditLogSpecifications.hasUserId(userId.trim()));
@@ -49,5 +48,12 @@ public class AuditServiceImpl implements AuditService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"));
         Page<AuditLog> logs = auditLogRepository.findAll(spec, pageable);
         return PageResponse.from(logs, AuditLogResponse::from);
+    }
+
+    @Override
+    public AuditLogResponse getById(String auditId) {
+        AuditLog log = auditLogRepository.findById(auditId)
+                .orElseThrow(() -> new ResourceNotFoundException("Audit log not found"));
+        return AuditLogResponse.from(log);
     }
 }

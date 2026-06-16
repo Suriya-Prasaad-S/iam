@@ -43,11 +43,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.data(user));
     }
 
-    /**
-     * Shared create endpoint. ADM may create DS; DS
-     * may create FO / ENG / CO within their own
-     * department. The fine-grained role gate lives in the service.
-     */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADM', 'DS')")
     public ResponseEntity<ApiResponse> createUser(
