@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CivicDesk — Microservices Integration Guide (Auth &amp; Audit)</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#1e293b; --ink:#0f172a; --muted:#64748b;
+    --line:#e2e8f0; --brand:#2563eb; --brand-d:#1d4ed8;
+    --ok:#16a34a; --warn:#d97706; --err:#dc2626;
+    --code-bg:#0f172a; --code-ink:#e2e8f0;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:#0f172a; background:#f8fafc;
+  }
+  header{
+    background:linear-gradient(135deg,#1e3a8a,#2563eb); color:#fff; padding:40px 24px;
+  }
+  header .wrap{max-width:960px; margin:0 auto}
+  header h1{margin:0 0 8px; font-size:30px}
+  header p{margin:0; opacity:.9}
+  .wrap{max-width:960px; margin:0 auto; padding:0 24px}
+  main{padding:32px 0 80px}
+  h2{font-size:24px; margin:48px 0 12px; padding-bottom:8px; border-bottom:2px solid var(--line)}
+  h3{font-size:19px; margin:28px 0 8px}
+  h4{font-size:16px; margin:18px 0 6px; color:#334155}
+  a{color:var(--brand)}
+  code{font-family:"SF Mono",Consolas,"Roboto Mono",monospace; font-size:.88em;
+    background:#eef2ff; color:#3730a3; padding:1px 6px; border-radius:4px}
+  pre{background:var(--code-bg); color:var(--code-ink); padding:16px 18px; border-radius:10px;
+    overflow:auto; font-size:13.5px; line-height:1.55}
+  pre code{background:none; color:inherit; padding:0; font-size:inherit}
+  table{border-collapse:collapse; width:100%; margin:14px 0; font-size:14.5px}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top}
+  th{background:#f1f5f9}
+  tr:nth-child(even) td{background:#fbfcfe}
+  .pill{display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600}
+  .pill.must{background:#fee2e2; color:#991b1b}
+  .pill.should{background:#fef3c7; color:#92400e}
+  .pill.opt{background:#e0e7ff; color:#3730a3}
+  .callout{border-left:4px solid var(--brand); background:#eff6ff; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0}
+  .callout.warn{border-color:var(--warn); background:#fffbeb}
+  .callout.err{border-color:var(--err); background:#fef2f2}
+  .callout.ok{border-color:var(--ok); background:#f0fdf4}
+  .callout b{display:block; margin-bottom:2px}
+  .toc{background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 22px; margin:24px 0}
+  .toc ol{margin:6px 0 0; padding-left:22px}
+  .toc a{text-decoration:none}
+  .step{counter-increment:step; position:relative; padding-left:46px; margin:22px 0}
+  .step::before{content:counter(step); position:absolute; left:0; top:-2px; width:30px; height:30px;
+    background:var(--brand); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700}
+  .steps{counter-reset:step}
+  .muted{color:var(--muted)}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  footer{border-top:1px solid var(--line); padding:24px; text-align:center; color:var(--muted); font-size:13px}
+  .badge{font-size:12px; background:#0f172a; color:#fff; padding:2px 8px; border-radius:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>CivicDesk — Microservices Integration Guide</h1>
+    <p>How each module team wires <b>Authentication (JWT)</b> and <b>Audit logging</b> into their own service.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="callout">
+    <b>Who this is for</b>
+    Teammates building a module as its own Spring Boot service (Grievance, Permit, Service&nbsp;Request, …).
+    IAM issues and validates JWTs; the Audit service stores audit entries. Your service must
+    <b>validate the same JWTs</b> and <b>POST audit entries over HTTP</b>. This guide shows exactly how.
+  </div>
+
+  <div class="toc">
+    <b>Contents</b>
+    <ol>
+      <li><a href="#arch">Architecture &amp; ports</a></li>
+      <li><a href="#repo">Repo / build structure</a></li>
+      <li><a href="#files">Files your service needs from IAM</a></li>
+      <li><a href="#auth">Adding AUTH to your service (step by step)</a></li>
+      <li><a href="#audit">Adding AUDIT to your service (step by step)</a></li>
+      <li><a href="#config">Config &amp; pom dependencies</a></li>
+      <li><a href="#flows">Request flows (auth &amp; audit)</a></li>
+      <li><a href="#trouble">Troubleshooting</a></li>
+      <li><a href="#checklist">Final checklist</a></li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="arch">1. Architecture &amp; ports</h2>
+  <p>
+    Each module is its <b>own Spring Boot app on its own port</b>. They share nothing in memory — they talk over HTTP.
+    The trust between them is the <b>stateless JWT</b>: every service holds the <b>same signing secret</b>, so each one
+    validates a token <em>locally</em> without calling IAM on every request.
+  </p>
+  <pre><code>                         ┌──────────────────────────┐
+        Frontend ───────▶ │  API Gateway (optional)  │ :8080
+                          └───────────┬──────────────┘
+   /iam/**, /audit/**  ───▶ ┌─────────▼──────────┐
+                            │ IAM + Audit service│ :8081   issues JWT · validates JWT
+                            │  (one app)         │         owns users + audit_log
+                            └─────────▲──────────┘
+   /grievance/**  ─▶ ┌───────────────┴────┐
+                     │ Grievance service  │ :8083  ──POST /audit/auditLogs (forward JWT)─▶ 8081
+                     └────────────────────┘
+   /permit/**     ─▶ ┌────────────────────┐
+                     │ Permit service     │ :8084  ──POST /audit/auditLogs─────────────-─▶ 8081
+                     └────────────────────┘
+   /servicerequest/**┌────────────────────┐
+              ─▶      │ ServiceRequest svc │ :8085  ──POST /audit/auditLogs─────────────-─▶ 8081
+                     └────────────────────┘</code></pre>
+
+  <table>
+    <tr><th>Service</th><th>Port</th><th>Owns</th><th>Talks to</th></tr>
+    <tr><td>IAM + Audit</td><td><code>8081</code></td><td>users, departments, <code>audit_log</code></td><td>—</td></tr>
+    <tr><td>Grievance</td><td><code>8083</code></td><td>grievances</td><td>Audit (8081)</td></tr>
+    <tr><td>Permit</td><td><code>8084</code></td><td>permits</td><td>Audit (8081)</td></tr>
+    <tr><td>Service Request</td><td><code>8085</code></td><td>requests</td><td>Audit (8081)</td></tr>
+    <tr><td>API Gateway <span class="muted">(optional)</span></td><td><code>8080</code></td><td>routing only</td><td>all</td></tr>
+  </table>
+
+  <div class="callout ok">
+    <b>Key idea</b>
+    IAM <b>issues</b> tokens (on login). Your service only <b>validates</b> them — using the same secret. No per-request
+    call back to IAM. That is what keeps the services independent.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="repo">2. Repo / build structure</h2>
+  <p>Recommended: a Maven <b>multi-module</b> build — one shared library jar + one runnable app per service.</p>
+  <pre><code>civicdesk/                         parent pom (packaging = pom)
+├── civicdesk-common/              SHARED LIBRARY (jar) — auth + response + audit-client
+├── iam-service/          :8081    module/iam + module/auditlog (server side)
+├── grievance-service/    :8083    module/grievance   (your service)
+├── permit-service/       :8084
+└── servicerequest-service/ :8085</code></pre>
+  <p>
+    Everything in section 3 lives in <code>civicdesk-common</code>. Your service adds <b>one dependency</b> on it
+    instead of copy-pasting. If a shared library is not ready yet, copy the listed files into your service under the
+    same package names.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2 id="files">3. Files your service needs from IAM</h2>
+
+  <h3>Bucket A — Security / JWT <span class="pill must">MUST HAVE</span></h3>
+  <table>
+    <tr><th>File</th><th>What it does</th></tr>
+    <tr><td><code>common/util/JwtUtil.java</code></td><td>Validate a token, extract <code>userId</code> &amp; <code>role</code>. Needs the jjwt dependency.</td></tr>
+    <tr><td><code>config/JwtConfig.java</code></td><td>Supplies the <b>secret</b> + expiry to <code>JwtUtil</code>. Secret <b>must equal IAM's</b>.</td></tr>
+    <tr><td><code>…/security/JwtAuthFilter.java</code></td><td>Reads <code>Authorization: Bearer …</code>, validates, puts the principal in the SecurityContext.</td></tr>
+    <tr><td><code>config/SecurityConfig.java</code></td><td>Wires the filter, stateless sessions, <code>anyRequest().authenticated()</code>. You change only the <code>permitAll()</code> list.</td></tr>
+    <tr><td><code>common/util/SecurityContextUtil.java</code></td><td><code>getCurrentUserId()</code> / <code>getCurrentRole()</code> in your controllers.</td></tr>
+    <tr><td><code>common/util/ClientIpUtil.java</code></td><td>Resolves the caller IP (used when you log audit locally; optional otherwise).</td></tr>
+  </table>
+
+  <h3>Bucket B — Standard API contract <span class="pill should">SHOULD HAVE</span></h3>
+  <table>
+    <tr><th>File</th><th>What it does</th></tr>
+    <tr><td><code>common/response/ApiResponse.java</code></td><td>The <code>{ message, data }</code> envelope every endpoint returns.</td></tr>
+    <tr><td><code>common/response/PageResponse.java</code></td><td>Pagination envelope for list endpoints.</td></tr>
+    <tr><td><code>common/exception/GlobalExceptionHandler.java</code> + the exceptions you throw</td><td>Uniform 400/403/404/409 error bodies (<code>ResourceNotFoundException</code>, <code>BadRequestException</code>, <code>ForbiddenException</code>, …).</td></tr>
+  </table>
+
+  <h3>Bucket C — Audit integration <span class="pill must">NEEDED TO LOG</span></h3>
+  <table>
+    <tr><th>File</th><th>What it does</th></tr>
+    <tr><td><code>module/auditlog/client/AuditClient.java</code></td><td>POSTs an audit entry to <code>/audit/auditLogs</code>, forwarding the JWT.</td></tr>
+    <tr><td><code>module/auditlog/dto/request/CreateAuditLogRequest.java</code></td><td>The request body <code>AuditClient</code> builds.</td></tr>
+    <tr><td><code>module/auditlog/validation/EnumValid.java</code> + <code>EnumValidator.java</code></td><td>The request DTO is annotated with <code>@EnumValid</code>, so these must be present to compile.</td></tr>
+    <tr><td><code>module/auditlog/enums/AuditAction.java</code> + <code>AuditModule.java</code></td><td>Canonical values. <b>You add your own constants</b> (e.g. <code>CREATE_GRIEVANCE</code>, <code>GRIEVANCE</code>).</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <b>Do NOT copy these IAM-internal classes</b>
+    <code>User</code> / <code>Department</code> entities &amp; repositories, <code>AuthController</code> / <code>AuthService</code>,
+    <code>UserController</code>, <code>DepartmentController</code>, <code>DataSeeder</code>, <code>NationalIdUtil</code>, and every
+    server-side <code>module/auditlog</code> class (entity, repository, service, controller). Those belong only to IAM and the Audit service.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="auth">4. Adding AUTH to your service</h2>
+  <p>Goal: every endpoint in your service is protected, and you can read <em>who</em> is calling.</p>
+
+  <div class="steps">
+    <div class="step">
+      <h4>Add the dependency (or copy Bucket A)</h4>
+      <pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;com.civicdesk&lt;/groupId&gt;
+  &lt;artifactId&gt;civicdesk-common&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+      <p class="muted">No shared lib yet? Copy the Bucket A files into your service, keeping the same package names.</p>
+    </div>
+
+    <div class="step">
+      <h4>Set the SAME JWT secret in your <code>application.properties</code></h4>
+      <pre><code>app.jwt.secret=civicdesk_hs256_secret_key_minimum_32_characters_required
+app.jwt.expiry=1800000</code></pre>
+      <div class="callout err">
+        <b>This is the #1 cause of failures</b>
+        If your secret differs from IAM's by even one character, every token IAM issued will fail validation in your
+        service with <b>401</b>. The secret must be byte-for-byte identical across all services (use an env var in prod).
+      </div>
+    </div>
+
+    <div class="step">
+      <h4>Adjust <code>SecurityConfig</code> to your own public paths</h4>
+      <p>Your service has no <code>/iam/auth/*</code> endpoints. Replace the IAM <code>permitAll()</code> entries with
+        your own public ones (often none) and keep <code>anyRequest().authenticated()</code>.</p>
+      <pre><code>.authorizeHttpRequests(auth -&gt; auth
+        // your public endpoints (if any), else remove these lines
+        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        .anyRequest().authenticated())
+.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);</code></pre>
+    </div>
+
+    <div class="step">
+      <h4>Read the current user/role in your controller</h4>
+      <pre><code>import com.civicdesk.common.response.ApiResponse;
+import com.civicdesk.common.util.SecurityContextUtil;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@GetMapping("/grievance/example")
+@PreAuthorize("hasAnyRole('ADM','DS')")          // role codes: CIT/FO/DS/ENG/CO/ADM
+public ResponseEntity&lt;ApiResponse&gt; example() {
+    String userId = SecurityContextUtil.getCurrentUserId(); // e.g. "10000023"
+    String role   = SecurityContextUtil.getCurrentRole();   // e.g. "DS"
+    return ResponseEntity.ok(ApiResponse.data(service.doWork(userId, role)));
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>JWT claims you can rely on</b>
+    The token carries <code>userId</code> and <code>role</code>. Roles are exactly:
+    <code>CIT</code> Citizen · <code>FO</code> Field Officer · <code>DS</code> Dept. Supervisor ·
+    <code>ENG</code> Engineer · <code>CO</code> Coordinator · <code>ADM</code> Admin.
+    Use them verbatim in <code>@PreAuthorize</code> (Spring adds the <code>ROLE_</code> prefix for you).
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="audit">5. Adding AUDIT to your service</h2>
+  <p>Goal: record <em>who did what, in which module, from which IP</em> by POSTing to the Audit service.</p>
+
+  <div class="steps">
+    <div class="step">
+      <h4>Add your action(s) and module to the enums</h4>
+      <p>Edit <code>AuditAction</code> / <code>AuditModule</code> (in <code>civicdesk-common</code>, the single source of truth):</p>
+      <pre><code>// AuditAction.java   →  add your verbs
+CREATE_GRIEVANCE, UPDATE_GRIEVANCE, CLOSE_GRIEVANCE
+
+// AuditModule.java   →  your module is already listed (GRIEVANCE, PERMIT, …)</code></pre>
+    </div>
+
+    <div class="step">
+      <h4>Point your service at the Audit service</h4>
+      <pre><code>app.audit.base-url=http://localhost:8081/civicDesk   # → POST {base-url}/audit/auditLogs</code></pre>
+    </div>
+
+    <div class="step">
+      <h4>Inject <code>AuditClient</code> and record after the action</h4>
+      <pre><code>import com.civicdesk.common.response.ApiResponse;
+import com.civicdesk.common.util.SecurityContextUtil;
+import com.civicdesk.module.auditlog.client.AuditClient;
+import com.civicdesk.module.auditlog.enums.AuditAction;
+import com.civicdesk.module.auditlog.enums.AuditModule;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+// constructor-inject: private final AuditClient auditClient;
+@PostMapping("/grievance")
+@PreAuthorize("hasRole('CIT')")
+public ResponseEntity&lt;ApiResponse&gt; create(
+        @Valid @RequestBody CreateGrievanceRequest req,
+        HttpServletRequest httpReq) {
+
+    String userId = SecurityContextUtil.getCurrentUserId();
+    grievanceService.create(req, userId);
+
+    // forward the caller's JWT so Audit authenticates the same principal
+    String authHeader = httpReq.getHeader(HttpHeaders.AUTHORIZATION);
+    auditClient.record(userId, AuditAction.CREATE_GRIEVANCE, AuditModule.GRIEVANCE, authHeader);
+
+    return ResponseEntity.status(201).body(ApiResponse.of("Created successfully", null));
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <b>Best-effort by design</b>
+    <code>AuditClient</code> never throws — if the Audit service is down or returns an error, it logs a warning and
+    your main operation still succeeds. The client IP is resolved by the Audit service, so you do <b>not</b> send it.
+  </div>
+
+  <div class="callout warn">
+    <b>What the POST endpoint expects</b>
+    <code>POST /audit/auditLogs</code> · any authenticated user · body
+    <code>{ "userId", "action", "module" }</code> · <code>action</code>/<code>module</code> are validated against the enums
+    (unknown value → <b>400</b>) · returns <b>201</b> with the created record.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="config">6. Config &amp; pom dependencies</h2>
+
+  <h3>application.properties (per service)</h3>
+  <pre><code>server.port=8083                                   # UNIQUE per service
+server.servlet.context-path=/civicDesk             # keep the same everywhere
+
+# --- AUTH (must match IAM byte-for-byte) ---
+app.jwt.secret=civicdesk_hs256_secret_key_minimum_32_characters_required
+app.jwt.expiry=1800000
+
+# --- AUDIT ---
+app.audit.base-url=http://localhost:8081/civicDesk
+
+# --- CORS (frontend origins) ---
+app.cors.allowed-origins=http://localhost:4200,http://localhost:5173
+
+# --- your own database ---
+spring.datasource.url=jdbc:mysql://localhost:3306/civicdesk?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=root</code></pre>
+
+  <h3>pom.xml dependencies</h3>
+  <pre><code>&lt;!-- web + security + validation --&gt;
+&lt;dependency&gt;&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;&lt;/dependency&gt;
+&lt;dependency&gt;&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;&lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;&lt;/dependency&gt;
+&lt;dependency&gt;&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;&lt;artifactId&gt;spring-boot-starter-validation&lt;/artifactId&gt;&lt;/dependency&gt;
+
+&lt;!-- JPA + MySQL (if your service has its own tables) --&gt;
+&lt;dependency&gt;&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;&lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;&lt;/dependency&gt;
+&lt;dependency&gt;&lt;groupId&gt;com.mysql&lt;/groupId&gt;&lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;&lt;scope&gt;runtime&lt;/scope&gt;&lt;/dependency&gt;
+
+&lt;!-- JWT (jjwt 0.12.3) --&gt;
+&lt;dependency&gt;&lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;&lt;artifactId&gt;jjwt-api&lt;/artifactId&gt;&lt;version&gt;0.12.3&lt;/version&gt;&lt;/dependency&gt;
+&lt;dependency&gt;&lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;&lt;artifactId&gt;jjwt-impl&lt;/artifactId&gt;&lt;version&gt;0.12.3&lt;/version&gt;&lt;scope&gt;runtime&lt;/scope&gt;&lt;/dependency&gt;
+&lt;dependency&gt;&lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;&lt;artifactId&gt;jjwt-jackson&lt;/artifactId&gt;&lt;version&gt;0.12.3&lt;/version&gt;&lt;scope&gt;runtime&lt;/scope&gt;&lt;/dependency&gt;
+
+&lt;!-- the shared library (auth + audit-client) --&gt;
+&lt;dependency&gt;&lt;groupId&gt;com.civicdesk&lt;/groupId&gt;&lt;artifactId&gt;civicdesk-common&lt;/artifactId&gt;&lt;version&gt;1.0.0&lt;/version&gt;&lt;/dependency&gt;</code></pre>
+
+  <!-- ============================================================ -->
+  <h2 id="flows">7. Request flows</h2>
+
+  <h3>Auth flow</h3>
+  <pre><code>1. Browser → IAM (8081)        POST /iam/auth/staff/login {email, password}
+                               ◀── 200 { token: &lt;JWT signed with app.jwt.secret&gt; }
+
+2. Browser → YOUR svc (8083)   GET /grievance/... + Authorization: Bearer &lt;JWT&gt;
+       │
+       └─ JwtAuthFilter validates the JWT LOCALLY (same secret) → sets userId + role
+          → @PreAuthorize checks the role → your controller runs</code></pre>
+
+  <h3>Audit flow</h3>
+  <pre><code>YOUR svc (8083)  ──POST /audit/auditLogs──▶  Audit (8081)
+                   Authorization: Bearer &lt;JWT&gt;       │ JwtAuthFilter validates (same secret)
+                   { userId, action, module }        │ action/module checked vs enums
+                                                      │ IP resolved server-side
+                 ◀────────── 201 Created ────────────┘ row inserted in audit_log</code></pre>
+
+  <!-- ============================================================ -->
+  <h2 id="trouble">8. Troubleshooting</h2>
+  <table>
+    <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+    <tr><td><b>401</b> on every call (with a token)</td><td>JWT secret differs from IAM, or token expired</td><td>Make <code>app.jwt.secret</code> identical to IAM; re-login for a fresh token (30-min expiry)</td></tr>
+    <tr><td><b>401</b> with no token</td><td>Missing <code>Authorization: Bearer …</code> header</td><td>Send the header; note unknown paths also return 401 because security runs before routing</td></tr>
+    <tr><td><b>403</b> Forbidden</td><td>Valid token but wrong role for the endpoint</td><td>Check the <code>@PreAuthorize</code> role vs the caller's role claim</td></tr>
+    <tr><td><b>404</b> on audit POST</td><td>Wrong <code>app.audit.base-url</code> or path</td><td>Must resolve to <code>{base-url}/audit/auditLogs</code></td></tr>
+    <tr><td>Audit <b>400</b> "must be a valid audit action/module"</td><td>Action/module not in the enums</td><td>Add the constant to <code>AuditAction</code>/<code>AuditModule</code> and rebuild</td></tr>
+    <tr><td>Audit silently not recorded</td><td>Audit service down — client swallows the error (by design)</td><td>Check the warning log; verify the Audit service is up on 8081</td></tr>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2 id="checklist">9. Final checklist</h2>
+  <table>
+    <tr><th>#</th><th>Item</th></tr>
+    <tr><td>1</td><td>Service has its own <code>@SpringBootApplication</code> main class and a <b>unique</b> <code>server.port</code></td></tr>
+    <tr><td>2</td><td>Bucket A (security) present — via <code>civicdesk-common</code> or copied</td></tr>
+    <tr><td>3</td><td><code>app.jwt.secret</code> is <b>byte-for-byte identical</b> to IAM</td></tr>
+    <tr><td>4</td><td><code>SecurityConfig</code> <code>permitAll()</code> list trimmed to your own public paths</td></tr>
+    <tr><td>5</td><td>Controllers read the caller via <code>SecurityContextUtil</code> and guard with <code>@PreAuthorize</code></td></tr>
+    <tr><td>6</td><td>Your <code>AuditAction</code> constants added; <code>app.audit.base-url</code> set</td></tr>
+    <tr><td>7</td><td><code>AuditClient.record(...)</code> called after each create/update/delete, forwarding the JWT</td></tr>
+    <tr><td>8</td><td>Verified end-to-end: login on 8081 → call your endpoint → audit row appears via <code>GET /audit/auditLogs</code></td></tr>
+  </table>
+
+</main>
+
+<footer>
+  CivicDesk — Module 2.1 (IAM) · Microservices integration guide for Auth &amp; Audit · keep the JWT secret in sync across all services.
+</footer>
+</body>
+</html>

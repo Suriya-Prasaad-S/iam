@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CivicDesk IAM — Technical Reference Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0F2044;--blue:#1D5FA8;--sky:#3B9EE8;--mint:#00C9A7;--violet:#7C3AED;
+    --amber:#F59E0B;--rose:#F43F5E;--teal:#0D9488;
+    --slate50:#F8FAFC;--slate100:#F1F5F9;--slate200:#E2E8F0;--slate300:#CBD5E1;
+    --slate600:#475569;--slate700:#334155;--slate900:#0F172A;--white:#FFFFFF;
+    --sidebar-w:260px;--content-max:860px;--radius:10px;--transition:0.2s ease;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;font-size:15px;color:var(--slate700);background:var(--slate50);line-height:1.7;display:flex;min-height:100vh}
+  #sidebar{width:var(--sidebar-w);background:var(--navy);color:#CBD5E1;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;transition:transform var(--transition);display:flex;flex-direction:column}
+  #sidebar::-webkit-scrollbar{width:4px}
+  #sidebar::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+  .sidebar-brand{padding:24px 20px 16px;border-bottom:1px solid #1E3A5F;background:linear-gradient(135deg,#0F2044 0%,#1D3461 100%)}
+  .sidebar-brand .logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:#FFF;letter-spacing:-0.5px}
+  .sidebar-brand .logo span{color:var(--sky)}
+  .sidebar-brand .tagline{font-size:10px;color:#64748B;text-transform:uppercase;letter-spacing:1.5px;margin-top:4px}
+  .sidebar-nav{padding:12px 0 24px;flex:1}
+  .nav-section-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#475569;padding:16px 20px 6px}
+  .nav-item{display:block;padding:8px 20px;font-size:13px;color:#94A3B8;text-decoration:none;border-left:3px solid transparent;transition:all var(--transition);line-height:1.4}
+  .nav-item:hover{color:#E2E8F0;background:rgba(255,255,255,0.04);border-left-color:var(--sky)}
+  .nav-item.active{color:#E2E8F0;background:rgba(59,158,232,0.1);border-left-color:var(--sky);font-weight:500}
+  .nav-item .num{display:inline-block;width:22px;font-size:11px;color:#475569;font-weight:600}
+  #sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--navy);color:white;border:none;border-radius:8px;width:42px;height:42px;cursor:pointer;font-size:20px;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+  #main{margin-left:var(--sidebar-w);flex:1;min-width:0}
+  .cover{background:linear-gradient(135deg,#0F2044 0%,#1D3A6B 40%,#1D5FA8 100%);color:white;padding:80px 48px 72px;position:relative;overflow:hidden}
+  .cover::before{content:'';position:absolute;top:-60px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(59,158,232,0.18) 0%,transparent 70%);border-radius:50%}
+  .cover::after{content:'';position:absolute;bottom:-40px;left:30%;width:280px;height:280px;background:radial-gradient(circle,rgba(0,201,167,0.12) 0%,transparent 70%);border-radius:50%}
+  .cover-inner{position:relative;z-index:1;max-width:var(--content-max)}
+  .cover-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,201,167,0.15);border:1px solid rgba(0,201,167,0.35);color:var(--mint);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border-radius:40px;margin-bottom:20px}
+  .cover h1{font-family:'Sora',sans-serif;font-size:clamp(36px,6vw,60px);font-weight:800;color:white;line-height:1.05;letter-spacing:-1.5px;margin-bottom:10px;border:none;padding:0;margin-top:0}
+  .cover h1 span{color:var(--sky)}
+  .cover .sub{font-size:clamp(15px,2vw,18px);color:#93C5FD;margin-top:10px;font-weight:400;line-height:1.5}
+  .cover .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:36px}
+  .cover .meta-tag{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#CBD5E1;font-size:12px;font-family:'JetBrains Mono',monospace;padding:5px 12px;border-radius:6px}
+  .content{max-width:var(--content-max);margin:0 auto;padding:48px 40px 80px}
+  .section-card{background:white;border-radius:14px;border:1px solid var(--slate200);padding:36px 40px;margin-bottom:32px;box-shadow:0 1px 3px rgba(15,32,68,0.04),0 4px 16px rgba(15,32,68,0.04)}
+  h1{font-family:'Sora',sans-serif;color:var(--navy);font-size:clamp(22px,3vw,28px);font-weight:700;margin:0 0 6px;letter-spacing:-0.5px;padding-bottom:14px;border-bottom:2px solid var(--sky);position:relative}
+  h1::before{content:'';position:absolute;bottom:-2px;left:0;width:40px;height:4px;background:var(--mint);border-radius:2px}
+  h2{font-family:'Inter',sans-serif;color:var(--blue);font-size:clamp(16px,2.2vw,19px);font-weight:600;margin:28px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--slate200)}
+  h3{color:var(--violet);font-size:15px;font-weight:600;margin:20px 0 8px;display:flex;align-items:center;gap:8px}
+  h3::before{content:'';display:inline-block;width:4px;height:16px;background:linear-gradient(to bottom,var(--violet),var(--sky));border-radius:2px;flex-shrink:0}
+  h4{color:var(--teal);font-size:13px;font-weight:600;margin:16px 0 8px;text-transform:uppercase;letter-spacing:0.8px}
+  p{margin:10px 0;line-height:1.75;color:var(--slate700)}
+  .table-wrap{overflow-x:auto;border-radius:var(--radius);margin:16px 0;border:1px solid var(--slate200)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:0}
+  thead tr{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%)}
+  th{color:white;text-align:left;padding:11px 14px;font-weight:600;font-size:12px;letter-spacing:0.3px;white-space:nowrap}
+  td{border-bottom:1px solid var(--slate200);padding:10px 14px;vertical-align:top;line-height:1.6}
+  tr:last-child td{border-bottom:none}
+  tbody tr:nth-child(even){background:#F8FBFF}
+  tbody tr:hover{background:#EFF6FF;transition:background var(--transition)}
+  code{font-family:'JetBrains Mono',monospace;background:#EFF6FF;color:#1D4ED8;padding:2px 6px;border-radius:5px;font-size:12.5px;font-weight:500;border:1px solid #BFDBFE}
+  pre{font-family:'JetBrains Mono',monospace;background:var(--slate900);color:#E2E8F0;border-radius:10px;padding:20px 22px;font-size:12.5px;white-space:pre-wrap;line-height:1.6;margin:16px 0;overflow-x:auto;position:relative;border:1px solid #1E293B}
+  pre::before{content:'CODE';position:absolute;top:10px;right:14px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:#475569}
+  pre code{background:transparent;color:#E2E8F0;padding:0;border:none;font-size:inherit;font-weight:400}
+  ul,ol{margin:10px 0;padding-left:0;list-style:none}
+  li{margin:7px 0;padding-left:22px;position:relative;line-height:1.7}
+  ul>li::before{content:'';position:absolute;left:6px;top:10px;width:6px;height:6px;background:var(--sky);border-radius:50%}
+  ol{counter-reset:list-counter}
+  ol>li{counter-increment:list-counter;padding-left:30px}
+  ol>li::before{content:counter(list-counter);position:absolute;left:0;top:2px;width:20px;height:20px;background:var(--blue);color:white;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  li ul,li ol{margin:6px 0 6px 8px}
+  li ul>li::before{background:var(--mint);width:5px;height:5px;top:11px;left:7px}
+  .note{background:linear-gradient(135deg,#EFF6FF 0%,#F0F9FF 100%);border-left:4px solid var(--sky);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:14px;color:var(--slate700);position:relative}
+  .note strong{color:var(--blue)}
+  .callout{background:linear-gradient(135deg,#FFFBEB 0%,#FFF7E6 100%);border-left:4px solid var(--amber);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:14px;color:#78350F}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:20px 0}
+  .toc-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--slate50);border:1px solid var(--slate200);border-radius:8px;text-decoration:none;color:var(--slate700);font-size:13px;font-weight:500;transition:all var(--transition)}
+  .toc-item:hover{background:#EFF6FF;border-color:var(--sky);color:var(--blue);transform:translateY(-1px);box-shadow:0 4px 12px rgba(29,95,168,0.12)}
+  .toc-num{display:flex;align-items:center;justify-content:center;min-width:28px;height:28px;background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border-radius:6px;font-size:11px;font-weight:700}
+  .badge{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px}
+  .badge-blue{background:#DBEAFE;color:#1D4ED8}
+  .badge-green{background:#D1FAE5;color:#065F46}
+  .badge-violet{background:#EDE9FE;color:#5B21B6}
+  .badge-rose{background:#FFE4E6;color:#9F1239}
+  .badge-amber{background:#FEF3C7;color:#92400E}
+  .pagebreak{height:1px;background:linear-gradient(to right,transparent,var(--slate200),transparent);margin:36px 0}
+  #progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(to right,var(--sky),var(--mint));z-index:999;width:0%;transition:width 0.1s}
+  #back-top{position:fixed;bottom:28px;right:28px;width:44px;height:44px;background:var(--blue);color:white;border:none;border-radius:50%;cursor:pointer;font-size:18px;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(29,95,168,0.35);transition:all var(--transition);z-index:90}
+  #back-top:hover{background:var(--navy);transform:translateY(-2px)}
+  #back-top.visible{display:flex}
+  strong{color:var(--navy);font-weight:600}
+  em{color:var(--slate600);font-style:italic}
+  #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99}
+  @media(max-width:900px){
+    #sidebar{transform:translateX(-100%)}
+    #sidebar.open{transform:translateX(0)}
+    #sidebar-toggle{display:flex}
+    #overlay.open{display:block}
+    #main{margin-left:0}
+    .cover{padding:70px 24px 52px}
+    .content{padding:28px 20px 60px}
+    .section-card{padding:24px 20px;border-radius:10px}
+    .toc-grid{grid-template-columns:1fr}
+    pre{font-size:11.5px}
+  }
+  @media(max-width:600px){
+    .cover h1{font-size:28px}
+    .content{padding:20px 16px 48px}
+    .section-card{padding:18px 16px}
+    th,td{padding:8px 10px;font-size:12.5px}
+  }
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<button id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+<div id="overlay" onclick="closeSidebar()"></div>
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">Civic<span>Desk</span></div>
+    <div class="tagline">IAM — Technical Reference</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Documentation</div>
+    <a href="#cover"  class="nav-item active"><span class="num">—</span> Cover</a>
+    <a href="#toc"    class="nav-item"><span class="num">—</span> Table of Contents</a>
+    <a href="#s1"     class="nav-item"><span class="num">1</span> Executive Summary</a>
+    <a href="#s2"     class="nav-item"><span class="num">2</span> Technology Stack</a>
+    <a href="#s3"     class="nav-item"><span class="num">3</span> Project Structure</a>
+    <a href="#s4"     class="nav-item"><span class="num">4</span> Config &amp; Bootstrap</a>
+    <a href="#s5"     class="nav-item"><span class="num">5</span> Common Layer</a>
+    <a href="#s6"     class="nav-item"><span class="num">6</span> Data Layer</a>
+    <a href="#s7"     class="nav-item"><span class="num">7</span> DTOs</a>
+    <a href="#s8"     class="nav-item"><span class="num">8</span> Service Layer</a>
+    <a href="#s9"     class="nav-item"><span class="num">9</span> Controller Layer</a>
+    <a href="#s10"    class="nav-item"><span class="num">10</span> Security &amp; JWT</a>
+    <a href="#s11"    class="nav-item"><span class="num">11</span> End-to-End Flows</a>
+    <a href="#s12"    class="nav-item"><span class="num">12</span> Annotation Reference</a>
+    <a href="#s13"    class="nav-item"><span class="num">13</span> Error Handling</a>
+    <a href="#s14"    class="nav-item"><span class="num">14</span> Testing</a>
+    <a href="#s15"    class="nav-item"><span class="num">15</span> Appendix</a>
+  </div>
+</nav>
+<div id="main">
+<div class="cover" id="cover">
+  <div class="cover-inner">
+    <div class="cover-badge">&#x1F512; Module 2.1 — IAM</div>
+    <h1>Civic<span>Desk</span></h1>
+    <div class="sub">Identity &amp; Access Management (IAM)<br>Complete Technical Reference Documentation</div>
+    <div class="meta">
+      <span class="meta-tag">Spring Boot 3.4</span>
+      <span class="meta-tag">Spring Security 6</span>
+      <span class="meta-tag">JWT (HS256)</span>
+      <span class="meta-tag">MySQL 8 / H2</span>
+    </div>
+    <div class="meta" style="margin-top:16px;">
+      <span class="meta-tag" style="font-family:Inter;font-size:12px;color:#94A3B8;background:transparent;border-color:transparent;">Prepared for developers, architects, and stakeholders &nbsp;·&nbsp; Document version 1.0</span>
+    </div>
+  </div>
+</div>
+<div class="content">
+<div class="section-card" id="toc">
+<h1>Table of Contents</h1>
+<p><em>Click any section to jump directly to it. All 15 sections are covered in full below.</em></p>
+<div class="toc-grid">
+  <a href="#s1"  class="toc-item"><span class="toc-num">1</span> Executive Summary</a>
+  <a href="#s2"  class="toc-item"><span class="toc-num">2</span> Technology Stack</a>
+  <a href="#s3"  class="toc-item"><span class="toc-num">3</span> Project Structure</a>
+  <a href="#s4"  class="toc-item"><span class="toc-num">4</span> Config &amp; Bootstrap</a>
+  <a href="#s5"  class="toc-item"><span class="toc-num">5</span> Common Layer</a>
+  <a href="#s6"  class="toc-item"><span class="toc-num">6</span> Data Layer</a>
+  <a href="#s7"  class="toc-item"><span class="toc-num">7</span> DTOs</a>
+  <a href="#s8"  class="toc-item"><span class="toc-num">8</span> Service Layer</a>
+  <a href="#s9"  class="toc-item"><span class="toc-num">9</span> Controller Layer</a>
+  <a href="#s10" class="toc-item"><span class="toc-num">10</span> Security &amp; JWT</a>
+  <a href="#s11" class="toc-item"><span class="toc-num">11</span> End-to-End Flows</a>
+  <a href="#s12" class="toc-item"><span class="toc-num">12</span> Annotation Reference</a>
+  <a href="#s13" class="toc-item"><span class="toc-num">13</span> Error Handling</a>
+  <a href="#s14" class="toc-item"><span class="toc-num">14</span> Testing</a>
+  <a href="#s15" class="toc-item"><span class="toc-num">15</span> Appendix</a>
+</div>
+</div>
+
+<div class="section-card" id="s1">
+<h1>1. Executive Summary</h1>
+
+<h2>1.1 What This Project Is</h2>
+<p><strong>CivicDesk</strong> is a civic-services platform (the kind a municipal corporation uses to handle citizen grievances, service requests, permits, and inspections). This document describes <strong>Module 2.1 — Identity &amp; Access Management (IAM)</strong>, the foundation module on which every other module depends.</p>
+<p>The IAM module answers three questions for the entire platform:</p>
+<ul>
+  <li><strong>Who are you?</strong> &mdash; authentication of citizens and staff (login, registration, password setup).</li>
+  <li><strong>What are you allowed to do?</strong> &mdash; authorization through role-based access control (RBAC).</li>
+  <li><strong>What did you do?</strong> &mdash; an append-only audit trail of security-relevant actions.</li>
+</ul>
+
+<h2>1.2 Core Capabilities</h2>
+<ul>
+  <li><strong>Citizen self-registration</strong> &mdash; a member of the public creates their own account.</li>
+  <li><strong>Two separate login portals</strong> &mdash; one for citizens, one for staff, each rejecting the other&rsquo;s users.</li>
+  <li><strong>JWT issuance</strong> &mdash; on successful login the server returns a stateless, signed token (HS256, 30-minute validity) that the client presents on every later request.</li>
+  <li><strong>Staff onboarding</strong> &mdash; administrators create staff accounts without passwords; the staff member sets their own password on first use.</li>
+  <li><strong>Role-based administration</strong> &mdash; an Admin can create Department Supervisors; a Supervisor can create field staff within their own department.</li>
+  <li><strong>User lifecycle management</strong> &mdash; activate, suspend, or deactivate accounts.</li>
+  <li><strong>Audit logging</strong> &mdash; every register / login / logout / user-create / status-change / password-set event is recorded with the actor, action, module, IP address, and timestamp.</li>
+  <li><strong>Department directory</strong> &mdash; six seeded municipal departments to which staff are assigned.</li>
+</ul>
+
+<h2>1.3 How to Read This Document</h2>
+<p>The document moves from the &ldquo;big picture&rdquo; to the smallest detail:</p>
+<ul>
+  <li><strong>Sections 1&ndash;3</strong> &mdash; what the system does, the technology stack, and the layered architecture (the &ldquo;why&rdquo; behind the folder structure).</li>
+  <li><strong>Sections 4&ndash;9</strong> &mdash; a layer-by-layer walkthrough of <em>every</em> source file: configuration, the shared &ldquo;common&rdquo; layer, the data layer (entities/repositories), DTOs, services, and controllers.</li>
+  <li><strong>Section 10</strong> &mdash; an in-depth treatment of security and JWT authentication (the heart of an IAM module).</li>
+  <li><strong>Sections 11&ndash;14</strong> &mdash; end-to-end flows, a complete annotation reference, cross-cutting concerns (errors, logging, configuration), and the testing strategy.</li>
+</ul>
+<p>Each file is documented under four lenses: <strong>WHAT</strong> it does, <strong>WHY</strong> it exists, <strong>HOW</strong> it works internally, and <strong>HOW it connects</strong> to the rest of the system.</p>
+</div>
+
+<div class="section-card" id="s2">
+<h1>2. Technology Stack &amp; External Dependencies</h1>
+
+<h2>2.1 Stack Overview</h2>
+<div class="table-wrap"><table>
+  <tr><th>Concern</th><th>Technology</th><th>Why it was chosen</th></tr>
+  <tr><td>Language / Runtime</td><td>Java 21</td><td>Modern LTS Java; records, pattern matching, performance.</td></tr>
+  <tr><td>Application framework</td><td>Spring Boot 3.4.1</td><td>Auto-configuration, embedded server, opinionated defaults &mdash; minimal boilerplate.</td></tr>
+  <tr><td>Security</td><td>Spring Security 6</td><td>Industry-standard authentication/authorization framework; lambda DSL and method security.</td></tr>
+  <tr><td>Persistence</td><td>Spring Data JPA (Hibernate)</td><td>Object-Relational Mapping; repositories remove hand-written SQL/JDBC boilerplate.</td></tr>
+  <tr><td>Database (runtime)</td><td>MySQL 8</td><td>Reliable, widely-deployed relational database for production.</td></tr>
+  <tr><td>Database (tests)</td><td>H2 (in-memory)</td><td>Fast, disposable database so tests need no external server.</td></tr>
+  <tr><td>Tokens</td><td>JJWT 0.12.3</td><td>Mature library for creating and verifying JSON Web Tokens.</td></tr>
+  <tr><td>Password hashing</td><td>BCrypt (cost 10)</td><td>Adaptive, salted one-way hashing &mdash; the standard for password storage.</td></tr>
+  <tr><td>API documentation</td><td>springdoc-openapi 2.7.0 (Swagger UI)</td><td>Interactive, always-up-to-date API explorer.</td></tr>
+  <tr><td>Validation</td><td>Jakarta Bean Validation</td><td>Declarative request validation via annotations.</td></tr>
+  <tr><td>Testing</td><td>JUnit 5, Mockito, Spring Security Test</td><td>Unit, slice, and full-stack integration testing.</td></tr>
+  <tr><td>Build tool</td><td>Maven</td><td>Dependency management and build lifecycle.</td></tr>
+</table></div>
+
+<h2>2.2 Maven Dependencies (<code>pom.xml</code>)</h2>
+<p>The project inherits from <code>spring-boot-starter-parent</code> 3.4.1, which centralizes dependency versions. The declared dependencies are:</p>
+<div class="table-wrap"><table>
+  <tr><th>Dependency</th><th>Scope</th><th>Purpose</th></tr>
+  <tr><td><code>spring-boot-starter-web</code></td><td>compile</td><td>REST controllers, embedded Tomcat, Jackson JSON.</td></tr>
+  <tr><td><code>spring-boot-starter-security</code></td><td>compile</td><td>Authentication, authorization, the filter chain, BCrypt.</td></tr>
+  <tr><td><code>spring-boot-starter-data-jpa</code></td><td>compile</td><td>JPA/Hibernate, repositories, transactions.</td></tr>
+  <tr><td><code>spring-boot-starter-validation</code></td><td>compile</td><td>Bean Validation (Hibernate Validator) for request DTOs.</td></tr>
+  <tr><td><code>mysql-connector-j</code></td><td>runtime</td><td>MySQL JDBC driver (only needed at run time).</td></tr>
+  <tr><td><code>jjwt-api</code> / <code>jjwt-impl</code> / <code>jjwt-jackson</code> (0.12.3)</td><td>compile / runtime</td><td>JSON Web Token creation and verification (API + implementation + JSON binding).</td></tr>
+  <tr><td><code>springdoc-openapi-starter-webmvc-ui</code> (2.7.0)</td><td>compile</td><td>Generates OpenAPI spec and serves Swagger UI.</td></tr>
+  <tr><td><code>spring-boot-starter-test</code></td><td>test</td><td>JUnit 5, Mockito, AssertJ, Spring Test, MockMvc.</td></tr>
+  <tr><td><code>spring-security-test</code></td><td>test</td><td>Security testing helpers (<code>@WithMockUser</code>, etc.).</td></tr>
+  <tr><td><code>h2database</code></td><td>test</td><td>In-memory database for tests.</td></tr>
+</table></div>
+<div class="note"><strong>Version note:</strong> the project was scaffolded with a newer Spring Boot, but the <code>pom.xml</code> is deliberately pinned to <strong>3.4.1</strong> so that the documented APIs (the lambda security DSL, <code>@EnableMethodSecurity</code>, and JJWT 0.12.3) compile exactly as written. The <code>spring-boot-maven-plugin</code> packages the app into an executable JAR.</div>
+</div>
+
+<div class="section-card" id="s3">
+<h1>3. Project Structure &amp; Layered Architecture</h1>
+
+<h2>3.1 Folder Structure</h2>
+<pre>com.civicdesk
+├── CivicDeskApplication.java        ← application entry point (main)
+│
+├── config/                          ← cross-cutting configuration (beans)
+│   ├── SecurityConfig.java              the security filter chain + password encoder
+│   ├── JwtConfig.java                   typed holder for app.jwt.* properties
+│   ├── CorsConfig.java                  Cross-Origin Resource Sharing policy
+│   ├── OpenApiConfig.java               Swagger / OpenAPI metadata + bearer scheme
+│   └── DataSeeder.java                  seeds departments + first admin on startup
+│
+├── common/                          ← shared, module-agnostic building blocks
+│   ├── exception/                       GlobalExceptionHandler + domain exceptions
+│   ├── response/                        ApiResponse · ErrorResponse · PageResponse
+│   ├── util/                            JwtUtil · NationalIdUtil · SecurityContextUtil · ClientIpUtil
+│   └── id/                              NumericStringSequenceGenerator (custom ID generator)
+│
+└── module/
+    └── iam/                         ← the Identity & Access Management module
+        ├── controller/                  AuthController · UserController · AuditLogController · DepartmentController
+        ├── service/                     Auth / User / Audit / Department  (interface + Impl each)
+        ├── repository/                  UserRepository · AuditLogRepository · DepartmentRepository
+        │   └── spec/                    UserSpecifications · AuditLogSpecifications (dynamic queries)
+        ├── entity/                      User · AuditLog · Department  (JPA entities)
+        ├── dto/
+        │   ├── request/                 Register · CitizenLogin · StaffLogin · CreateUser · SetPassword · UpdateUserStatus
+        │   └── response/                AuthResponse · UserResponse · DepartmentResponse · AuditLogResponse
+        ├── enums/                       Role · UserStatus · AuditAction · AuditModule
+        └── security/                    JwtAuthFilter (per-request JWT validation)</pre>
+<p>The <code>module/</code> folder is deliberately a container for many modules. Teammates&rsquo; modules (<code>citizen/</code>, <code>servicerequest/</code>, <code>permit/</code>, <code>grievance/</code>, <code>analytics/</code>) live as siblings of <code>iam/</code>. The <code>common/</code> and <code>config/</code> packages are shared by all of them.</p>
+
+<h2>3.2 The Layered Architecture</h2>
+<p>The code follows a classic <strong>layered (n-tier) architecture</strong>. A request flows downward through the layers and a response flows back up:</p>
+<pre>   HTTP request
+        │
+        ▼
+┌──────────────────┐   Controller layer  (module/iam/controller)
+│   @RestController │   • Maps URLs to methods, reads request bodies/params
+│   "thin"          │   • Delegates to services; wraps results in ApiResponse
+└──────────────────┘
+        │  calls
+        ▼
+┌──────────────────┐   Service layer  (module/iam/service)
+│   @Service        │   • ALL business rules live here (RBAC, validation,
+│   business logic  │     password hashing, token issuance, audit logging)
+└──────────────────┘
+        │  calls
+        ▼
+┌──────────────────┐   Repository layer  (module/iam/repository)
+│   @Repository     │   • Spring Data JPA interfaces; CRUD + dynamic queries
+│   data access     │   • Translates method calls into SQL via Hibernate
+└──────────────────┘
+        │  maps to
+        ▼
+┌──────────────────┐   Entity layer  (module/iam/entity)
+│   @Entity         │   • Java objects mapped to database tables (ORM)
+└──────────────────┘
+        │
+        ▼
+     MySQL / H2
+
+  DTOs (dto/request, dto/response) cross the Controller↔Service boundary so
+  database entities are never exposed directly to the outside world.</pre>
+
+<h2>3.3 Separation of Concerns &mdash; Why This Structure?</h2>
+<div class="table-wrap"><table>
+  <tr><th>Layer</th><th>Single responsibility</th><th>Benefit</th></tr>
+  <tr><td>Controller</td><td>HTTP concerns only (routing, status codes, serialization).</td><td>Easy to read; swap transport without touching logic.</td></tr>
+  <tr><td>Service</td><td>Business rules and orchestration.</td><td>Reusable, independently testable, transactional.</td></tr>
+  <tr><td>Repository</td><td>Database access.</td><td>No hand-written SQL; database can evolve behind the interface.</td></tr>
+  <tr><td>Entity</td><td>The persistent data model.</td><td>One source of truth for the schema mapping.</td></tr>
+  <tr><td>DTO</td><td>The public API contract.</td><td>Security and decoupling &mdash; internals never leak.</td></tr>
+  <tr><td>Common / Config</td><td>Cross-cutting concerns shared by all modules.</td><td>Consistency and reuse across the whole platform.</td></tr>
+</table></div>
+<p>This structure means a change in one concern rarely forces a change in another: you can rename a database column without changing the API, add a validation rule without touching the database, or rewrite the security filter without touching business logic.</p>
+</div>
+
+<div class="section-card" id="s4">
+<h1>4. Configuration &amp; Application Bootstrap</h1>
+<p>This layer wires the application together: it starts the Spring context, defines the security rules, binds configuration properties, configures CORS and Swagger, and seeds baseline data.</p>
+
+<h2>4.1 CivicDeskApplication &mdash; the Entry Point</h2>
+<p><strong>File:</strong> <code>com/civicdesk/CivicDeskApplication.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> The Spring Boot entry point. Its <code>main(String[] args)</code> calls <code>SpringApplication.run(CivicDeskApplication.class, args)</code>, which starts the Spring context, scans for components, launches the embedded Tomcat server, and runs any startup runners.</li>
+  <li><strong>WHY:</strong> Every Spring Boot application needs exactly one bootstrap class to trigger auto-configuration and component scanning.</li>
+  <li><strong>HOW it connects:</strong> Because the class sits in the root package <code>com.civicdesk</code>, its component scan covers every sub-package &mdash; <code>config</code>, <code>common</code>, and <code>module.iam.*</code>. After startup, the <code>DataSeeder</code> runner executes.</li>
+</ul>
+<h4>Annotation</h4>
+<ul>
+  <li><code>@SpringBootApplication</code> &mdash; a meta-annotation combining three: <code>@Configuration</code> (the class may declare beans), <code>@EnableAutoConfiguration</code> (Spring configures itself based on the classpath &mdash; JPA, web, security), and <code>@ComponentScan</code> (discovers all <code>@Component</code>/<code>@Service</code>/<code>@Repository</code>/<code>@RestController</code>/<code>@Configuration</code> beans under <code>com.civicdesk</code>). It is what lets the entire module wire itself up with no XML.</li>
+</ul>
+
+<h2>4.2 SecurityConfig &mdash; the Heart of Authentication/Authorization</h2>
+<p><strong>File:</strong> <code>com/civicdesk/config/SecurityConfig.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> The single source of truth for how requests are secured. It defines the HTTP security filter chain (stateless JWT auth), the public-vs-protected URL rules, the placement of the custom JWT filter, the 401 entry point, and the password-encoder bean.</li>
+  <li><strong>WHY:</strong> It converts the application into a stateless, token-secured REST API: most endpoints require a valid JWT, a handful of auth/Swagger endpoints are public, and fine-grained role checks happen via <code>@PreAuthorize</code>.</li>
+</ul>
+<h4>The <code>filterChain(HttpSecurity http)</code> bean &mdash; step by step</h4>
+<ol>
+  <li><code>.cors(Customizer.withDefaults())</code> &mdash; enables CORS, looking up the <code>CorsConfigurationSource</code> bean defined in <code>CorsConfig</code>.</li>
+  <li><code>.csrf(csrf -&gt; csrf.disable())</code> &mdash; disables CSRF protection. This is correct for a stateless token API: there are no session cookies to protect, so CSRF tokens are unnecessary.</li>
+  <li><code>.sessionManagement(s -&gt; s.sessionCreationPolicy(STATELESS))</code> &mdash; the server keeps <strong>no</strong> HTTP session; every request must carry its own JWT.</li>
+  <li><code>.authorizeHttpRequests(...)</code> &mdash; rules evaluated top-down:
+    <ul>
+      <li><code>permitAll()</code> for <code>/iam/auth/register</code>, <code>/iam/auth/citizen/login</code>, <code>/iam/auth/staff/login</code>, <code>/iam/auth/setPassword</code> (these are how a user <em>obtains</em> a token).</li>
+      <li><code>permitAll()</code> for Swagger paths (<code>/swagger-ui.html</code>, <code>/swagger-ui/**</code>, <code>/v3/api-docs</code>, <code>/v3/api-docs/**</code>).</li>
+      <li><code>.anyRequest().authenticated()</code> &mdash; every other endpoint requires a valid authenticated principal.</li>
+    </ul>
+  </li>
+  <li><code>.exceptionHandling(...)</code> &mdash; a custom <code>AuthenticationEntryPoint</code> returns a clean HTTP <strong>401</strong> when a protected endpoint is hit without a valid token (instead of the default servlet error page).</li>
+  <li><code>.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)</code> &mdash; inserts the custom <code>JwtAuthFilter</code> <strong>before</strong> Spring&rsquo;s username/password filter, so the request is already authenticated from its token by the time authorization runs.</li>
+  <li><code>return http.build();</code> &mdash; builds the <code>SecurityFilterChain</code> bean.</li>
+</ol>
+<h4>The <code>passwordEncoder()</code> bean</h4>
+<p>Returns <code>new BCryptPasswordEncoder(10)</code> &mdash; a BCrypt encoder with cost factor 10. It is exposed as a <code>PasswordEncoder</code> bean and reused by <code>DataSeeder</code> (to hash the seeded admin) and the auth/user services (to hash on write and verify on login).</p>
+<h4>Annotations</h4>
+<ul>
+  <li><code>@Configuration</code> &mdash; marks the class as a source of bean definitions.</li>
+  <li><code>@EnableMethodSecurity</code> &mdash; turns on annotation-based method security (<code>@PreAuthorize</code>, etc.). Without it, those annotations on controllers would be silently ignored. (Modern replacement for <code>@EnableGlobalMethodSecurity</code>.)</li>
+  <li><code>@Bean</code> &mdash; registers the two methods&rsquo; return values as managed beans.</li>
+</ul>
+
+<h2>4.3 JwtConfig &mdash; Typed JWT Settings</h2>
+<p><strong>File:</strong> <code>com/civicdesk/config/JwtConfig.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> A typed configuration holder binding the <code>app.jwt.*</code> properties: <code>secret</code> (the HS256 signing secret) and <code>expiry</code> (token lifetime in milliseconds).</li>
+  <li><strong>WHY:</strong> Centralizes JWT settings into one strongly-typed object rather than scattering <code>@Value</code> lookups; components that mint/verify tokens inject this single bean.</li>
+  <li><strong>HOW it connects:</strong> Consumed by <code>JwtUtil</code> for signing/verifying tokens. The keys live in <code>application.properties</code> (<code>app.jwt.secret</code>, <code>app.jwt.expiry</code>).</li>
+</ul>
+<h4>Annotations</h4>
+<ul>
+  <li><code>@Configuration</code> &mdash; registers it as a bean.</li>
+  <li><code>@ConfigurationProperties(prefix = "app.jwt")</code> &mdash; binds all properties under <code>app.jwt</code> to fields by name (type-safe, grouped configuration).</li>
+</ul>
+
+<h2>4.4 CorsConfig &mdash; Cross-Origin Policy</h2>
+<p><strong>File:</strong> <code>com/civicdesk/config/CorsConfig.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> Defines the CORS policy so a browser-based frontend on a different origin/port can call this backend.</li>
+  <li><strong>WHY:</strong> Browsers block cross-origin requests by default; this config explicitly allows the frontend origins, methods, headers, and credentials.</li>
+  <li><strong>HOW:</strong> A <code>@Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")</code> field supplies a comma-separated origin list (defaulting to common React/Vite dev ports). The <code>corsConfigurationSource()</code> bean builds a <code>CorsConfiguration</code> that allows those origins; methods <code>GET, POST, PUT, PATCH, DELETE, OPTIONS</code> (OPTIONS for preflight); all headers; exposes the <code>Authorization</code> response header (so the frontend can read a refreshed token); and enables credentials. It is registered for all paths (<code>/**</code>).</li>
+  <li><strong>HOW it connects:</strong> This bean is exactly what <code>SecurityConfig</code>&rsquo;s <code>.cors(Customizer.withDefaults())</code> picks up.</li>
+</ul>
+
+<h2>4.5 OpenApiConfig &mdash; Swagger / API Documentation</h2>
+<p><strong>File:</strong> <code>com/civicdesk/config/OpenApiConfig.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> Configures the OpenAPI metadata (title, description, version) and registers a global <strong>bearer (JWT)</strong> security scheme so Swagger&rsquo;s &ldquo;Authorize&rdquo; button lets you paste a token and call secured endpoints.</li>
+  <li><strong>HOW:</strong> The <code>civicDeskOpenAPI()</code> bean returns an <code>OpenAPI</code> object with <code>.info(...)</code>, a global <code>SecurityRequirement</code> named <code>bearerAuth</code>, and a matching <code>SecurityScheme</code> of type HTTP / scheme <code>bearer</code> / format <code>JWT</code>.</li>
+  <li><strong>HOW it connects:</strong> The Swagger paths it enables are precisely the ones <code>SecurityConfig</code> marks <code>permitAll()</code>; the bearer scheme corresponds to the <code>Authorization: Bearer &lt;token&gt;</code> header validated by <code>JwtAuthFilter</code>.</li>
+</ul>
+
+<h2>4.6 DataSeeder &mdash; Startup Bootstrap Data</h2>
+<p><strong>File:</strong> <code>com/civicdesk/config/DataSeeder.java</code> (implements <code>CommandLineRunner</code>)</p>
+<ul>
+  <li><strong>WHAT:</strong> A startup runner that seeds the six municipal departments and the very first admin account directly into the database &mdash; bypassing the API, since no admin exists yet to call protected endpoints.</li>
+  <li><strong>WHY:</strong> Bootstraps an empty database with the baseline data the system needs: departments to assign staff to, and a first administrator who can then create everyone else.</li>
+  <li><strong>HOW:</strong>
+    <ul>
+      <li><code>run(String... args)</code> &mdash; the <code>CommandLineRunner</code> callback; calls <code>seedDepartments()</code> then <code>seedAdmin()</code>.</li>
+      <li><code>seedDepartments()</code> &mdash; for each of the six fixed names (Infrastructure, Public Health, Licensing &amp; Compliance, Citizen Services, Administration, Compliance &amp; Audit), if it does not already exist, creates it with a generated id. Idempotent.</li>
+      <li><code>nextDepartmentId()</code> &mdash; produces sequential ids <code>DPT01</code>, <code>DPT02</code>, &hellip; by taking the max existing numeric suffix + 1 (zero-padded).</li>
+      <li><code>seedAdmin()</code> &mdash; if no user with the admin email exists, builds a <code>User</code> with role <code>ADM</code>, status active, BCrypt-hashed password (from <code>app.admin.password</code>), <code>passwordSet = true</code>, no department; saves it; then records a <code>SEED_ADMIN</code> audit entry. Idempotent.</li>
+    </ul>
+  </li>
+  <li><strong>HOW it connects:</strong> Runs automatically because <code>SpringApplication.run</code> executes all <code>CommandLineRunner</code> beans. Uses the <code>PasswordEncoder</code> bean from <code>SecurityConfig</code>, the IAM entities/enums/repositories, and <code>AuditService</code>. The seeded admin is the first principal able to authenticate and call the <code>@PreAuthorize</code>-protected endpoints.</li>
+  <li><strong>Annotations:</strong> <code>@Component</code> (discovered by component scan; its <code>run</code> executes at startup); <code>@Value</code> on the admin fields (injects <code>app.admin.*</code>, which are environment-overridable).</li>
+</ul>
+</div>
+
+<div class="section-card" id="s5">
+<h1>5. The Common Layer (Shared Building Blocks)</h1>
+<p>The <code>common</code> package holds module-agnostic infrastructure: a unified response envelope, a centralized exception handler with a family of domain exceptions, security/utility helpers, and a custom ID generator. These are shared across every module of the platform.</p>
+
+<h2>5.1 Response Envelopes (<code>common/response</code>)</h2>
+
+<h3>5.1.1 ApiResponse</h3>
+<p><strong>File:</strong> <code>common/response/ApiResponse.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> A unified JSON response envelope with two fields, <code>message</code> and <code>data</code>, used for both success and error responses.</li>
+  <li><strong>WHY:</strong> Gives every endpoint a single, predictable shape. Null fields are suppressed, so the same class produces clean payloads for reads (data only), writes (message + optional data), and errors (message only).</li>
+  <li><strong>HOW &mdash; factory methods:</strong>
+    <ul>
+      <li><code>ApiResponse.data(Object data)</code> &mdash; for GET success (data only).</li>
+      <li><code>ApiResponse.of(String message, Object data)</code> &mdash; for POST/PUT success (message + optional data).</li>
+      <li><code>ApiResponse.error(String message)</code> &mdash; for error responses (message only).</li>
+    </ul>
+  </li>
+  <li><strong>Annotation:</strong> <code>@JsonInclude(JsonInclude.Include.NON_NULL)</code> (Jackson) &mdash; omits any null field during serialization, which is what makes <code>message</code>/<code>data</code> disappear when unset.</li>
+  <li><strong>HOW it connects:</strong> Returned by all IAM controllers and produced by <code>GlobalExceptionHandler</code> for errors.</li>
+</ul>
+
+<h3>5.1.2 ErrorResponse</h3>
+<p><strong>File:</strong> <code>common/response/ErrorResponse.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> A richer, path-aware error envelope carrying <code>status</code>, <code>message</code>, <code>path</code>, and <code>timestamp</code>; a static <code>of(...)</code> factory stamps the timestamp automatically.</li>
+  <li><strong>WHY / connection:</strong> Provided for cross-module consistency. The IAM <code>GlobalExceptionHandler</code> currently uses <code>ApiResponse</code> instead, so this type is available for other modules that prefer the richer shape.</li>
+  <li><strong>Annotation:</strong> <code>@JsonPropertyOrder({"status","message","path","timestamp"})</code> &mdash; fixes the JSON field order for deterministic output.</li>
+</ul>
+
+<h3>5.1.3 PageResponse&lt;T&gt;</h3>
+<p><strong>File:</strong> <code>common/response/PageResponse.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> A lightweight, framework-neutral pagination envelope: <code>content</code>, <code>totalElements</code>, <code>totalPages</code>, <code>currentPage</code>.</li>
+  <li><strong>WHY:</strong> Decouples the public API from Spring Data&rsquo;s internal <code>Page</code> type, keeping the wire format stable and minimal.</li>
+  <li><strong>HOW:</strong> The key factory <code>static &lt;S,T&gt; PageResponse&lt;T&gt; from(Page&lt;S&gt; page, Function&lt;S,T&gt; mapper)</code> builds the envelope from a Spring Data <code>Page</code>, converting each entity to a response DTO via the mapper and copying the totals and current (zero-based) page number.</li>
+  <li><strong>HOW it connects:</strong> Used by the user-listing and audit-log endpoints; the mapper typically converts entity &rarr; DTO (e.g. <code>UserResponse::from</code>).</li>
+</ul>
+
+<h2>5.2 Exception Handling (<code>common/exception</code>)</h2>
+
+<h3>5.2.1 GlobalExceptionHandler</h3>
+<p><strong>File:</strong> <code>common/exception/GlobalExceptionHandler.java</code></p>
+<ul>
+  <li><strong>WHAT:</strong> A centralized, application-wide handler that catches exceptions thrown anywhere in the controllers/services and converts each into an <code>ApiResponse.error(...)</code> body with a specific HTTP status.</li>
+  <li><strong>WHY:</strong> Keeps controllers free of <code>try/catch</code> and guarantees a consistent error envelope and status code for every error.</li>
+  <li><strong>Annotations:</strong> <code>@RestControllerAdvice</code> (global advice for all controllers; combines <code>@ControllerAdvice</code> + <code>@ResponseBody</code>), and one <code>@ExceptionHandler(Type.class)</code> per method.</li>
+</ul>
+<h4>Complete exception &rarr; HTTP status mapping</h4>
+<div class="table-wrap"><table>
+  <tr><th>Exception</th><th>HTTP status</th><th>Meaning / when thrown</th></tr>
+  <tr><td><code>BadCredentialsException</code> (app&rsquo;s own)</td><td>401 Unauthorized</td><td>Login failed &mdash; wrong email or password.</td></tr>
+  <tr><td><code>TokenExpiredException</code></td><td>401 Unauthorized</td><td>A JWT has expired.</td></tr>
+  <tr><td><code>ForbiddenException</code></td><td>403 Forbidden</td><td>Authenticated caller is not allowed to perform the action.</td></tr>
+  <tr><td><code>AccessDeniedException</code> (Spring Security)</td><td>403 Forbidden</td><td>A <code>@PreAuthorize</code> role check failed (fixed message &ldquo;Access denied&rdquo;).</td></tr>
+  <tr><td><code>PasswordNotSetException</code></td><td>403 Forbidden</td><td>Admin-created user who has not yet set a password tries to log in.</td></tr>
+  <tr><td><code>BadRequestException</code></td><td>400 Bad Request</td><td>Request is structurally valid but semantically invalid.</td></tr>
+  <tr><td><code>AccountSuspendedException</code></td><td>423 Locked</td><td>A suspended user tries to log in (credentials valid).</td></tr>
+  <tr><td><code>AccountInactiveException</code></td><td>403 Forbidden</td><td>An inactive/deactivated user tries to log in.</td></tr>
+  <tr><td><code>DuplicateEmailException</code></td><td>409 Conflict</td><td>Email already registered.</td></tr>
+  <tr><td><code>ResourceNotFoundException</code></td><td>404 Not Found</td><td>Requested resource does not exist.</td></tr>
+  <tr><td><code>MethodArgumentNotValidException</code> (Spring)</td><td>400 Bad Request</td><td>A <code>@Valid</code> request body failed Bean Validation; the handler joins all field errors into one message (<code>"field: message, ..."</code>).</td></tr>
+</table></div>
+
+<h3>5.2.2 The Domain Exception Family</h3>
+<p>Nine custom exceptions all extend <code>RuntimeException</code> (unchecked) with a single message constructor. They give business code domain-meaningful signals while the handler owns the HTTP-status mapping (decoupling business logic from HTTP concerns).</p>
+<ul>
+  <li><code>ResourceNotFoundException</code>, <code>BadCredentialsException</code>, <code>DuplicateEmailException</code>, <code>ForbiddenException</code>, <code>TokenExpiredException</code>, <code>BadRequestException</code>, <code>AccountSuspendedException</code>, <code>AccountInactiveException</code>, <code>PasswordNotSetException</code>.</li>
+</ul>
+<div class="note"><strong>Note:</strong> The app&rsquo;s <code>BadCredentialsException</code> lives in <code>com.civicdesk.common.exception</code> and is distinct from Spring Security&rsquo;s class of the same name. The thoughtful split between <code>AccountSuspendedException</code> (423) and <code>AccountInactiveException</code> (403) lets clients react differently to a locked vs a merely inactive account.</div>
+
+<h2>5.3 Utilities (<code>common/util</code>)</h2>
+
+<h3>5.3.1 JwtUtil &mdash; Token Authority</h3>
+<p><strong>File:</strong> <code>common/util/JwtUtil.java</code> &mdash; covered in depth in <strong>Section 10</strong>. In summary, it is a <code>@Component</code> that issues and verifies HS256 JWTs using the JJWT library, injecting <code>JwtConfig</code> for the secret and expiry. Key methods: <code>generateToken(userId, role)</code>, <code>validateToken(token)</code>, <code>extractClaims/extractUserId/extractRole/extractExpiration</code>.</p>
+
+<h3>5.3.2 NationalIdUtil &mdash; PII Protection</h3>
+<p><strong>File:</strong> <code>common/util/NationalIdUtil.java</code> (final, non-instantiable static helper)</p>
+<ul>
+  <li><strong>WHAT/WHY:</strong> Protects a citizen&rsquo;s national ID. The raw ID is never stored &mdash; only a one-way hash &mdash; and only the last four digits are ever displayed.</li>
+  <li><strong>HOW:</strong> <code>hash(nationalId)</code> computes a SHA-256 digest and hex-encodes it (returns null for blank input). <code>maskLast4(nationalId)</code> returns the value with all but the last four characters replaced by <code>*</code> (e.g. <code>********1234</code>).</li>
+</ul>
+
+<h3>5.3.3 SecurityContextUtil &mdash; Reading the Current User</h3>
+<p><strong>File:</strong> <code>common/util/SecurityContextUtil.java</code> (final, non-instantiable)</p>
+<ul>
+  <li><strong>WHAT/WHY:</strong> A clean, one-line way for service/controller code to read the currently authenticated caller without touching Spring Security internals. It reads exactly what <code>JwtAuthFilter</code> placed into the context.</li>
+  <li><strong>HOW:</strong> <code>getCurrentUserId()</code> returns the principal (the JWT <code>userId</code>); <code>getCurrentRole()</code> returns the first authority with the <code>ROLE_</code> prefix stripped.</li>
+  <li><strong>HOW it connects:</strong> Used by controllers to pass the caller&rsquo;s id/role into services, and by audit logging to record who acted.</li>
+</ul>
+
+<h3>5.3.4 ClientIpUtil &mdash; Resolving the Client IP</h3>
+<p><strong>File:</strong> <code>common/util/ClientIpUtil.java</code> (final, non-instantiable)</p>
+<ul>
+  <li><strong>WHAT/WHY:</strong> Resolves the true client IP for audit records, accounting for proxies/load balancers and IPv6 loopback.</li>
+  <li><strong>HOW:</strong> <code>resolve(request)</code> prefers the first entry of the <code>X-Forwarded-For</code> header, falling back to <code>getRemoteAddr()</code>; it normalizes IPv6 loopback (<code>::1</code>) to <code>127.0.0.1</code> and returns <code>"UNKNOWN"</code> when nothing is available.</li>
+  <li><strong>HOW it connects:</strong> Controllers call it and pass the result into <code>AuditService.log(...)</code>.</li>
+</ul>
+
+<h2>5.4 Custom ID Generation (<code>common/id</code>)</h2>
+<h3>NumericStringSequenceGenerator</h3>
+<p><strong>File:</strong> <code>common/id/NumericStringSequenceGenerator.java</code> (extends Hibernate&rsquo;s <code>SequenceStyleGenerator</code>)</p>
+<ul>
+  <li><strong>WHAT:</strong> A custom Hibernate ID generator that produces sequential numeric ids (<code>10000001</code>, <code>10000002</code>, &hellip;) from a database sequence but stores them in a <code>String</code> primary-key column.</li>
+  <li><strong>WHY:</strong> The whole codebase treats user/audit ids as opaque <code>String</code>s (the JWT <code>userId</code> claim, the security principal, repository keys, DTOs). Keeping the id a <code>String</code> avoids a type change rippling through every layer, while giving human-friendly running numbers instead of UUIDs. It works on both H2 (native sequences, used in tests) and MySQL (Hibernate emulates with a backing table).</li>
+  <li><strong>HOW:</strong> <code>configure(...)</code> tells the parent generator the type is <code>Long</code>/<code>BIGINT</code> (so it can drive the sequence) even though the entity field is a <code>String</code>; <code>generate(...)</code> fetches the next numeric value and converts it with <code>String.valueOf(...)</code> before it is assigned to the <code>@Id</code> field.</li>
+  <li><strong>HOW it connects:</strong> Referenced by the <code>User</code> and <code>AuditLog</code> entity <code>@Id</code> mappings; the strings it mints become the JWT <code>userId</code> and the Spring Security principal.</li>
+</ul>
+</div>
+
+<div class="section-card" id="s6">
+<h1>6. The Data Layer: Entities, Enums, Repositories &amp; Schema</h1>
+
+<h2>6.1 Cross-Cutting Persistence Design</h2>
+<ul>
+  <li><strong>Naming strategy:</strong> the app uses <code>PhysicalNamingStrategyStandardImpl</code>, so Hibernate keeps identifiers as-is (camelCase columns like <code>userId</code>, <code>passwordHash</code>, <code>createdAt</code>) rather than converting to snake_case.</li>
+  <li><strong>ID generation:</strong> <code>User</code> and <code>AuditLog</code> use the custom <code>NumericStringSequenceGenerator</code> (sequential numeric strings from <code>10000001</code>); <code>Department</code> uses hand-assigned <code>DPT01</code>&ndash;style keys.</li>
+  <li><strong>Enums stored as strings:</strong> entity columns <code>role</code>, <code>status</code>, <code>action</code>, <code>module</code> are plain <code>String</code> (no <code>@Enumerated</code>). The enums exist for application-layer validation/normalization; the database sees raw strings, which keeps the values stable and module-shareable.</li>
+</ul>
+
+<h2>6.2 Entity: User</h2>
+<p><strong>File:</strong> <code>module/iam/entity/User.java</code></p>
+<ul>
+  <li><strong>WHAT/WHY:</strong> The JPA entity mapped to the <code>users</code> table &mdash; the core identity record for every account (citizen, staff, admin) and the single source of truth for authentication, authorization, org placement, and lifecycle.</li>
+  <li><strong>Class annotations:</strong> <code>@Entity</code> (JPA-managed persistent class), <code>@Table(name="users", indexes={...})</code> declaring three indexes &mdash; <code>idx_users_role</code>, <code>idx_users_status</code>, and the composite <code>idx_users_role_status</code> (supporting the common combined filter).</li>
+</ul>
+<div class="table-wrap"><table>
+  <tr><th>Field</th><th>Column / Type</th><th>Constraints &amp; notes</th></tr>
+  <tr><td><code>userId</code></td><td>userId, String(36)</td><td>PK, not null, not updatable; generated sequential numeric string.</td></tr>
+  <tr><td><code>name</code></td><td>name, String(100)</td><td>not null.</td></tr>
+  <tr><td><code>email</code></td><td>email, String(150)</td><td>not null, unique &mdash; the login identifier.</td></tr>
+  <tr><td><code>passwordHash</code></td><td>passwordHash, String(255)</td><td>nullable; null until the owner sets a password (BCrypt).</td></tr>
+  <tr><td><code>passwordSet</code></td><td>isPasswordSet, boolean</td><td>not null, default false &mdash; &ldquo;has the owner set a password?&rdquo;</td></tr>
+  <tr><td><code>phone</code></td><td>phone, String(15)</td><td>nullable.</td></tr>
+  <tr><td><code>role</code></td><td>role, String(30)</td><td>not null; one of the <code>Role</code> enum names.</td></tr>
+  <tr><td><code>departmentId</code></td><td>departmentId, String(36)</td><td>nullable; informal reference to <code>Department</code>.</td></tr>
+  <tr><td><code>status</code></td><td>status, String(20)</td><td>not null, default &ldquo;A&rdquo; (active).</td></tr>
+  <tr><td><code>createdAt</code></td><td>createdAt, LocalDateTime</td><td>not updatable; auto-set on insert.</td></tr>
+  <tr><td><code>updatedAt</code></td><td>updatedAt, LocalDateTime</td><td>auto-updated on every change.</td></tr>
+</table></div>
+<h4>Field/ORM annotation glossary</h4>
+<ul>
+  <li><code>@Id</code> &mdash; marks the primary-key field.</li>
+  <li><code>@GeneratedValue(generator="...")</code> &mdash; delegates id creation to a named generator.</li>
+  <li><code>@GenericGenerator(... NumericStringSequenceGenerator ...)</code> &mdash; a Hibernate hook pointing at the custom generator (with <code>@Parameter</code> sequence settings).</li>
+  <li><code>@Column(...)</code> &mdash; maps a field to a column and declares length/nullability/uniqueness.</li>
+  <li><code>@CreationTimestamp</code> / <code>@UpdateTimestamp</code> &mdash; Hibernate auto-populates these at insert / on every update.</li>
+  <li><code>@Index</code> (inside <code>@Table</code>) &mdash; declares a database index for faster filtering.</li>
+</ul>
+
+<h2>6.3 Entity: AuditLog</h2>
+<p><strong>File:</strong> <code>module/iam/entity/AuditLog.java</code></p>
+<ul>
+  <li><strong>WHAT/WHY:</strong> Maps the <code>audit_log</code> table &mdash; an append-only trail of security/lifecycle events for compliance and forensics (who did what, in which module, from which IP, and when).</li>
+  <li><strong>HOW:</strong> Insert-only; <code>timestamp</code> is auto-set via <code>@CreationTimestamp</code> (no update timestamp since rows are immutable). Same numeric-string id pattern (<code>audit_id_seq</code>).</li>
+  <li><strong>Annotations:</strong> <code>@Entity</code>, <code>@Table(name="audit_log", indexes={...})</code> with four indexes (<code>idx_audit_userId</code>, <code>idx_audit_action</code>, <code>idx_audit_module</code>, <code>idx_audit_timestamp</code>) supporting filtering and time-ordered listing.</li>
+</ul>
+<div class="table-wrap"><table>
+  <tr><th>Field</th><th>Column / Type</th><th>Notes</th></tr>
+  <tr><td><code>auditId</code></td><td>auditId, String(36)</td><td>PK, generated numeric string.</td></tr>
+  <tr><td><code>userId</code></td><td>userId, String(36)</td><td>not null &mdash; the actor.</td></tr>
+  <tr><td><code>action</code></td><td>action, String(50)</td><td>not null &mdash; an <code>AuditAction</code> name (uppercase).</td></tr>
+  <tr><td><code>module</code></td><td>module, String(50)</td><td>not null &mdash; an <code>AuditModule</code> name (uppercase).</td></tr>
+  <tr><td><code>ipAddress</code></td><td>ipAddress, String(45)</td><td>nullable; length 45 fits IPv6.</td></tr>
+  <tr><td><code>timestamp</code></td><td>timestamp, LocalDateTime</td><td>not updatable; auto-set at insert.</td></tr>
+</table></div>
+
+<h2>6.4 Entity: Department</h2>
+<p><strong>File:</strong> <code>module/iam/entity/Department.java</code></p>
+<ul>
+  <li><strong>WHAT/WHY:</strong> Maps the <code>departments</code> table &mdash; the organizational units that group staff and track the heading supervisor; provides a stable, human-readable code.</li>
+  <li><strong>HOW:</strong> The simplest entity. <code>departmentId</code> (String(10)) is hand-assigned (e.g. <code>DPT01</code>) &mdash; no <code>@GeneratedValue</code>. <code>name</code> (String(100)) is not null and unique. <code>departmentSupervisorId</code> (String(36), nullable) informally references the heading <code>User</code>. A convenience constructor <code>Department(String name)</code> exists.</li>
+  <li><strong>Annotations:</strong> <code>@Entity</code>, <code>@Table(name="departments")</code>, <code>@Id</code>, <code>@Column</code>.</li>
+</ul>
+
+<h2>6.5 Enums</h2>
+<div class="table-wrap"><table>
+  <tr><th>Enum</th><th>Values</th><th>Purpose</th></tr>
+  <tr><td><code>Role</code></td><td>CIT (Citizen), FO (Field Officer), DS (Department Supervisor), ENG (Engineer), CO (Coordinator/Compliance Officer), ADM (Admin)</td><td>Valid user roles; stored as the enum name in <code>User.role</code>; the <code>@PreAuthorize</code> and <code>users.role</code> contract.</td></tr>
+  <tr><td><code>UserStatus</code></td><td>ACT(&ldquo;A&rdquo;) Active, INA(&ldquo;I&rdquo;) Inactive, SUS(&ldquo;S&rdquo;) Suspended</td><td>Maps friendly names to single-char codes stored in <code>User.status</code>; <code>normalize(input)</code> canonicalizes varied inputs (e.g. &ldquo;active&rdquo;, &ldquo;ACT&rdquo;, &ldquo;A&rdquo; &rarr; &ldquo;A&rdquo;).</td></tr>
+  <tr><td><code>AuditAction</code></td><td>REGISTER, LOGIN, LOGOUT, CREATE_USER, UPDATE_STATUS, SET_PASSWORD, SEED_ADMIN</td><td>Canonical auditable actions; name stored in <code>AuditLog.action</code>.</td></tr>
+  <tr><td><code>AuditModule</code></td><td>IAM, SERVICE_REQUEST, GRIEVANCE, PERMIT, WORKS</td><td>Which functional module emitted the event; name stored in <code>AuditLog.module</code>.</td></tr>
+</table></div>
+<p><code>UserStatus</code> carries a <code>label</code> field with a getter, and its <code>normalize</code> method is used at login, on status updates, and when validating a status filter.</p>
+
+<h2>6.6 Repositories (<code>module/iam/repository</code>)</h2>
+<p>Spring Data JPA repositories are <em>interfaces</em>: you declare a method and Spring generates the SQL implementation at runtime. All three are annotated <code>@Repository</code> and extend <code>JpaRepository&lt;Entity, String&gt;</code> (CRUD + paging). Two also extend <code>JpaSpecificationExecutor</code> for dynamic queries.</p>
+<div class="table-wrap"><table>
+  <tr><th>Repository</th><th>Notable methods</th><th>Purpose</th></tr>
+  <tr><td><code>UserRepository</code><br>(+ <code>JpaSpecificationExecutor&lt;User&gt;</code>)</td><td><code>findByEmail</code>, <code>existsByEmail</code>, <code>findByDepartmentId(...)</code>, <code>findByDepartmentIdAndStatus(...)</code>, <code>findByRole(...)</code></td><td>Login lookup, duplicate check, and paginated filtered listings. The specification executor enables <code>findAll(Specification, Pageable)</code> to combine filters without an explosion of method variants.</td></tr>
+  <tr><td><code>AuditLogRepository</code><br>(+ <code>JpaSpecificationExecutor&lt;AuditLog&gt;</code>)</td><td><code>findByUserId(...)</code>, <code>findByModule(...)</code>, <code>findAllByOrderByTimestampDesc(...)</code></td><td>Per-user / per-module queries and newest-first listing; specifications drive combined userId/action/module filtering.</td></tr>
+  <tr><td><code>DepartmentRepository</code></td><td><code>existsByName</code>, <code>findByName</code></td><td>Uniqueness check and lookup by name (no specification support needed).</td></tr>
+</table></div>
+<div class="note"><strong>JPA / Hibernate in one paragraph:</strong> JPA is the specification; Hibernate is the implementation. An <em>entity</em> is a Java object mapped to a table; the <em>EntityManager</em> tracks entities and flushes changes as SQL. <em>Derived query methods</em> (like <code>findByEmail</code>) are parsed from the method name into SQL. <em>Specifications</em> build type-safe dynamic <code>WHERE</code> clauses with the JPA Criteria API, so optional filters can be combined with <code>.and(...)</code> at run time.</div>
+
+<h2>6.7 Specifications (<code>module/iam/repository/spec</code>)</h2>
+<ul>
+  <li><code>UserSpecifications</code> &mdash; a final utility class of composable <code>Specification&lt;User&gt;</code> predicates: <code>hasRole</code>, <code>hasStatus</code>, <code>inDepartment</code> (each a single-column equality). Callers <code>.and(...)</code> only the filters supplied.</li>
+  <li><code>AuditLogSpecifications</code> &mdash; composable <code>Specification&lt;AuditLog&gt;</code> predicates: <code>hasUserId</code> (verbatim), <code>hasAction</code> and <code>hasModule</code> (each trims and upper-cases the argument, because actions/modules are stored uppercase).</li>
+</ul>
+<p>Both are passed to the repositories&rsquo; <code>findAll(Specification, Pageable)</code>, letting the user-listing and audit-log endpoints support any combination of optional filters with one query path.</p>
+
+<h2>6.8 Database Schema (<code>src/main/resources/db/civicdesk_iam.sql</code>)</h2>
+<ul>
+  <li><strong>WHAT/WHY:</strong> A hand-maintained MySQL 8 schema mirroring the three entities, plus optional foreign keys, seed data, and demonstration DML. It documents the schema and lets a DBA stand up the database by hand (at runtime the app does this automatically via <code>ddl-auto=update</code> and <code>DataSeeder</code>).</li>
+  <li><strong>Tables:</strong> <code>departments</code>, <code>users</code> (with the three indexes), and <code>audit_log</code> (with four indexes), all <code>InnoDB</code> / <code>utf8mb4</code>.</li>
+  <li><strong>Optional foreign keys</strong> (commented out, since Hibernate creates none): <code>users.departmentId &rarr; departments</code>, <code>departments.departmentSupervisorId &rarr; users</code> (defined after both tables to avoid a cyclic dependency), and <code>audit_log.userId &rarr; users</code>.</li>
+  <li><strong>Seed data:</strong> the six departments, the system admin (<code>10000001</code>), and a <code>SEED_ADMIN</code> audit row &mdash; mirroring exactly what <code>DataSeeder</code> creates.</li>
+  <li><strong>Demonstration DML:</strong> illustrative INSERT/UPDATE/SELECT/DROP statements (e.g. assigning supervisors, suspending a user, counting users by role).</li>
+</ul>
+</div>
+
+<div class="section-card" id="s7">
+<h1>7. Data Transfer Objects (DTOs)</h1>
+
+<h2>7.1 Why DTOs Instead of Exposing Entities</h2>
+<p>DTOs form the contract between the API and its clients. They exist separately from JPA entities for three reasons:</p>
+<ul>
+  <li><strong>Security:</strong> entities carry sensitive/internal fields (e.g. <code>passwordHash</code>, internal flags). Returning them risks leaking secrets, and binding requests straight onto them risks &ldquo;mass-assignment&rdquo; attacks (a client setting a field it shouldn&rsquo;t, like its own role). <code>UserResponse</code> deliberately <strong>omits the password hash</strong>.</li>
+  <li><strong>Decoupling:</strong> the wire format can evolve independently of the database. Renaming a column does not break the API, and vice versa.</li>
+  <li><strong>Validation &amp; performance:</strong> request DTOs are the boundary where input is validated (rejecting malformed data with 400 before it reaches business logic), and they carry only the fields actually needed (no over-fetching of entity graphs).</li>
+</ul>
+<div class="note"><strong>Implementation note:</strong> these DTOs are plain POJOs with hand-written getters/setters and explicit constructors &mdash; Lombok is <em>not</em> used in this codebase. (Lombok&rsquo;s <code>@Data</code>/<code>@Builder</code> etc. are explained generally in the annotation reference for completeness.) Response DTOs each provide a static <code>from(entity)</code> factory for entity&rarr;DTO mapping.</p></div>
+
+<h2>7.2 Request DTOs (<code>dto/request</code>)</h2>
+<div class="table-wrap"><table>
+  <tr><th>DTO</th><th>Fields</th><th>Key validations &amp; purpose</th></tr>
+  <tr><td><code>RegisterRequest</code></td><td>name, email, password, phone, dateOfBirth, gender, nationalId, address, ward, zone</td><td>Citizen self-registration. <code>@NotBlank</code>/<code>@Size</code> on name/email; <code>@Email</code>; password <code>@Size(min=8,max=72)</code> (72 = BCrypt&rsquo;s effective byte limit); phone <code>@Pattern(^[6-9][0-9]{9}$)</code> (Indian mobile). Optional profile fields use format <code>@Pattern</code>s (date <code>YYYY-MM-DD</code>, gender MALE/FEMALE/OTHER, alphanumeric national id).</td></tr>
+  <tr><td><code>CitizenLoginRequest</code></td><td>email, password</td><td>Citizen login. <code>@NotBlank</code> + <code>@Email</code> on email; <code>@NotBlank</code> on password.</td></tr>
+  <tr><td><code>StaffLoginRequest</code></td><td>email, password</td><td>Staff login. Structurally identical to citizen login but kept a separate type so the two flows can diverge.</td></tr>
+  <tr><td><code>SetPasswordRequest</code></td><td>email, newPassword</td><td>First-time password setup for admin-created staff. <code>@Email</code> on email; newPassword <code>@Size(min=8,max=72)</code>.</td></tr>
+  <tr><td><code>CreateUserRequest</code></td><td>name, email, phone, role, departmentId</td><td>Admin-driven staff creation (no password field &mdash; staff set their own later). <code>role</code> restricted via <code>@Pattern(DS|FO|ENG|CO)</code>; optional <code>departmentId</code>.</td></tr>
+  <tr><td><code>UpdateUserStatusRequest</code></td><td>status</td><td>Status change. <code>@Pattern</code> accepts case-insensitive short/long forms (A/ACT/ACTIVE, I/INA/INACTIVE, S/SUS/SUSPENDED).</td></tr>
+</table></div>
+<h4>Validation annotations explained</h4>
+<ul>
+  <li><code>@NotBlank</code> &mdash; the string must be present and not just whitespace.</li>
+  <li><code>@NotNull</code> &mdash; the value must not be null (used for non-string fields).</li>
+  <li><code>@Email</code> &mdash; the string must be a syntactically valid email.</li>
+  <li><code>@Size(min, max)</code> &mdash; bounds string length (e.g. password 8&ndash;72; name &le;100).</li>
+  <li><code>@Pattern(regexp=...)</code> &mdash; the string must match a regular expression (phone, role whitelist, date format, status whitelist).</li>
+</ul>
+<p>Using <code>@Pattern</code> whitelists for <code>role</code> and <code>status</code> gives clean, human-readable 400 messages instead of cryptic deserialization errors. Validation only fires because the controllers annotate the body with <code>@Valid</code>.</p>
+
+<h2>7.3 Response DTOs (<code>dto/response</code>)</h2>
+<div class="table-wrap"><table>
+  <tr><th>DTO</th><th>Fields</th><th>Purpose / mapping</th></tr>
+  <tr><td><code>AuthResponse</code></td><td>token, userId, role, expiresIn</td><td>Returned on successful login. Carries the JWT and minimal identity info; <code>expiresIn</code> is the token lifetime in seconds. Assembled in the auth service (no <code>from</code> factory).</td></tr>
+  <tr><td><code>UserResponse</code></td><td>userId, name, email, phone, role, departmentId, status, createdAt</td><td>The safe projection of <code>User</code> &mdash; <strong>never includes the password hash</strong>. Built with <code>UserResponse.from(user)</code>.</td></tr>
+  <tr><td><code>DepartmentResponse</code></td><td>departmentId, name, departmentSupervisorId</td><td>Safe projection of <code>Department</code>; built with <code>from(d)</code>.</td></tr>
+  <tr><td><code>AuditLogResponse</code></td><td>auditId, userId, action, module, ipAddress, timestamp</td><td>Audit-trail entry exposed to admins/compliance; built with <code>from(log)</code>.</td></tr>
+</table></div>
+</div>
+
+<div class="section-card" id="s8">
+<h1>8. The Service Layer (Business Logic)</h1>
+
+<h2>8.1 Why a Service Layer Exists</h2>
+<p>The service layer sits between the web layer (controllers) and the persistence layer (repositories). Its purpose is <strong>separation of concerns</strong>:</p>
+<ul>
+  <li><strong>Business-logic isolation</strong> &mdash; rules like &ldquo;an Admin may only create a Department Supervisor&rdquo;, password validation, status normalization, and role-based filtering live here, not in controllers, making them reusable and independently testable.</li>
+  <li><strong>Transaction boundaries</strong> &mdash; multi-step writes are wrapped in <code>@Transactional</code> so they commit or roll back atomically.</li>
+  <li><strong>Abstraction via interfaces</strong> &mdash; each service is an interface plus a <code>@Service</code> implementation, so controllers depend on the abstraction and tests can mock it.</li>
+</ul>
+<p>Each service follows the pattern: an interface (<code>AuthService</code>, <code>UserService</code>, <code>AuditService</code>, <code>DepartmentService</code>) and an implementation (<code>...Impl</code>). All use constructor injection with <code>final</code> fields (no field <code>@Autowired</code>).</p>
+
+<h2>8.2 AuthServiceImpl</h2>
+<p><strong>Files:</strong> <code>service/AuthService.java</code> (interface), <code>service/AuthServiceImpl.java</code></p>
+<p><strong>WHAT/WHY:</strong> Implements registration, citizen/staff login, and first-time password setup. It centralizes all credential verification, account-status gating, password hashing, and token issuance so controllers stay thin. Dependencies: <code>UserRepository</code>, <code>PasswordEncoder</code>, <code>JwtUtil</code>, <code>AuditService</code>.</p>
+<h4>Methods, step by step</h4>
+<ul>
+  <li><strong><code>register(req, ip)</code></strong> &mdash; <code>@Transactional</code>. Rejects a duplicate email (<code>DuplicateEmailException</code>); builds a citizen <code>User</code>; BCrypt-hashes the password; sets role <code>CIT</code>, active status, <code>passwordSet=true</code>; saves; writes a <code>REGISTER</code> audit entry.</li>
+  <li><strong><code>citizenLogin(req, ip)</code></strong> &mdash; calls the shared <code>authenticate(...)</code>; if the user is <em>not</em> a citizen, throws <code>ForbiddenException("Please use the staff portal")</code>; otherwise issues a token.</li>
+  <li><strong><code>staffLogin(req, ip)</code></strong> &mdash; calls <code>authenticate(...)</code>; if the user <em>is</em> a citizen, throws <code>ForbiddenException("Please use the citizen portal")</code>; otherwise issues a token.</li>
+  <li><strong><code>authenticate(email, password)</code></strong> (private) &mdash; the shared credential + status gate: looks up by email (else <code>BadCredentialsException</code>); if <code>!passwordSet</code> throws <code>PasswordNotSetException</code>; verifies the password with <code>passwordEncoder.matches(...)</code> (else <code>BadCredentialsException</code> with the same generic message to prevent user enumeration); normalizes status and throws <code>AccountSuspendedException</code> (suspended) or <code>AccountInactiveException</code> (not active).</li>
+  <li><strong><code>setPassword(req)</code></strong> &mdash; <code>@Transactional</code>. Looks up the user (else <code>ResourceNotFoundException</code>); if a password is already set throws <code>ForbiddenException</code> (one-time only); enforces minimum length; BCrypt-hashes, sets <code>passwordSet=true</code>, saves; writes a <code>SET_PASSWORD</code> audit entry.</li>
+  <li><strong><code>issueToken(user, ip)</code></strong> (private) &mdash; generates a JWT via <code>jwtUtil.generateToken(userId, role)</code>; writes a <code>LOGIN</code> audit entry; returns an <code>AuthResponse</code> with the token, id, role, and expiry in seconds.</li>
+</ul>
+<p><strong>Connections:</strong> <code>UserRepository</code>, <code>PasswordEncoder</code>, <code>JwtUtil</code>, <code>AuditService</code>; the <code>Role</code>/<code>UserStatus</code>/<code>AuditAction</code> enums; and the domain exceptions. <strong>Annotations:</strong> <code>@Service</code>; <code>@Transactional</code> on the two write methods; <code>@Value("${app.jwt.expiry}")</code> for the expiry.</p>
+
+<h2>8.3 UserServiceImpl</h2>
+<p><strong>Files:</strong> <code>service/UserService.java</code>, <code>service/UserServiceImpl.java</code></p>
+<p><strong>WHAT/WHY:</strong> Implements user lookup, role-based creation, status updates, and paged filtered listing &mdash; enforcing the organizational hierarchy and scoping data visibility by department. Dependencies: <code>UserRepository</code>, <code>DepartmentRepository</code>.</p>
+<h4>Methods</h4>
+<ul>
+  <li><strong><code>getById(userId)</code></strong> &mdash; returns <code>UserResponse.from(user)</code> or throws <code>ResourceNotFoundException</code>.</li>
+  <li><strong><code>createUser(req, callerRole, callerUserId)</code></strong> &mdash; <code>@Transactional</code>. After a duplicate-email check, applies the role rules:
+    <ul>
+      <li><strong>Caller is ADM</strong> &rarr; may only create a <code>DS</code>; <code>departmentId</code> is required and must exist (the created supervisor is then back-linked as the department&rsquo;s <code>departmentSupervisorId</code>).</li>
+      <li><strong>Caller is DS</strong> &rarr; may only create <code>FO</code>/<code>ENG</code>/<code>CO</code>, and the new user inherits the supervisor&rsquo;s own department (the caller cannot pick an arbitrary one).</li>
+      <li><strong>Any other role</strong> &rarr; <code>ForbiddenException</code>.</li>
+    </ul>
+    New staff are saved with <code>passwordHash=null</code> and <code>passwordSet=false</code> (they set a password on first login).</li>
+  <li><strong><code>updateStatus(userId, status)</code></strong> &mdash; normalizes the status with <code>UserStatus.normalize(...)</code> and saves.</li>
+  <li><strong><code>getUsers(callerRole, callerUserId, role, status, departmentId, page, size)</code></strong> &mdash; builds a dynamic <code>Specification</code>: an <strong>ADM</strong> may filter by role/status/department and sees all users; a <strong>DS</strong> is force-scoped to <em>active</em> users in <em>their own</em> department. Executes <code>findAll(spec, pageable)</code> and returns a <code>PageResponse&lt;UserResponse&gt;</code>.</li>
+</ul>
+<p><strong>Annotations:</strong> <code>@Service</code>; <code>@Transactional</code> on <code>createUser</code> (it performs two writes &mdash; the new user and the department back-link &mdash; that must be atomic).</p>
+
+<h2>8.4 AuditServiceImpl</h2>
+<p><strong>Files:</strong> <code>service/AuditService.java</code>, <code>service/AuditServiceImpl.java</code></p>
+<ul>
+  <li><strong>WHAT/WHY:</strong> The single point for the audit trail &mdash; writes entries and returns paged, filtered, newest-first history. Reused by the auth flows to record REGISTER/LOGIN/SET_PASSWORD. Dependency: <code>AuditLogRepository</code>.</li>
+  <li><strong><code>log(userId, action, module, ip)</code></strong> &mdash; constructs an <code>AuditLog</code> with the given fields and saves it (timestamp auto-populated).</li>
+  <li><strong><code>getAll(userId, action, module, page, size)</code></strong> &mdash; composes <code>AuditLogSpecifications</code> for the non-blank filters, sorts by <code>timestamp</code> descending, and returns a <code>PageResponse&lt;AuditLogResponse&gt;</code>.</li>
+  <li><strong>Annotation:</strong> <code>@Service</code> (no <code>@Transactional</code> &mdash; each method is a single repository operation).</li>
+</ul>
+
+<h2>8.5 DepartmentServiceImpl</h2>
+<p><strong>Files:</strong> <code>service/DepartmentService.java</code>, <code>service/DepartmentServiceImpl.java</code></p>
+<ul>
+  <li><strong>WHAT/WHY:</strong> A simple read service returning all departments sorted by name (used when an Admin picks a department while creating a Supervisor). Dependency: <code>DepartmentRepository</code>.</li>
+  <li><strong><code>getAll()</code></strong> &mdash; <code>findAll(Sort.by("name"))</code>, mapped to <code>DepartmentResponse</code> via the static factory.</li>
+  <li><strong>Annotation:</strong> <code>@Service</code>.</li>
+</ul>
+
+<h2>8.6 Service-Layer Summary</h2>
+<div class="table-wrap"><table>
+  <tr><th>Aspect</th><th>Detail</th></tr>
+  <tr><td>Bean stereotype</td><td>All impls are <code>@Service</code> with constructor-injected <code>final</code> dependencies.</td></tr>
+  <tr><td><code>@Transactional</code></td><td>Only on multi-write methods: <code>register</code>, <code>setPassword</code>, <code>createUser</code>.</td></tr>
+  <tr><td>Password security</td><td>Exclusively through <code>PasswordEncoder.encode</code>/<code>matches</code>; uniform &ldquo;Invalid email or password&rdquo; on login to prevent enumeration.</td></tr>
+  <tr><td>JWT</td><td>Generated only in <code>AuthServiceImpl.issueToken</code>; expiry from <code>app.jwt.expiry</code> (ms), surfaced in seconds.</td></tr>
+  <tr><td>Audit</td><td>Centralized in <code>AuditService.log</code>; auth flows record REGISTER/LOGIN/SET_PASSWORD.</td></tr>
+  <tr><td>Role hierarchy</td><td>ADM &rarr; creates DS (valid department, back-links supervisor). DS &rarr; creates FO/ENG/CO (own department). Others forbidden.</td></tr>
+  <tr><td>Data scoping</td><td>ADM sees all; DS restricted to own department &amp; active users only.</td></tr>
+</table></div>
+</div>
+
+<div class="section-card" id="s9">
+<h1>9. The Controller Layer (REST API)</h1>
+
+<h2>9.1 Role of Controllers &amp; the &ldquo;Thin Controller&rdquo; Principle</h2>
+<p>Controllers are the HTTP front door. In a REST API they map URLs and HTTP verbs to Java methods, read request bodies/parameters, and serialize responses to JSON. In this codebase every controller method does only orchestration:</p>
+<ol>
+  <li>Read the caller&rsquo;s identity/role from the security context (<code>SecurityContextUtil</code>).</li>
+  <li>Resolve the client IP (<code>ClientIpUtil</code>) when auditing.</li>
+  <li>Delegate the real work to a service method.</li>
+  <li>Optionally fire an audit log.</li>
+  <li>Wrap the result in <code>ApiResponse</code> / <code>ResponseEntity</code>.</li>
+</ol>
+<p>There is <strong>no business logic, persistence, or mapping</strong> in controllers &mdash; methods are typically 3&ndash;6 lines. This keeps them focused on HTTP concerns and makes the business layer independently testable. <code>DepartmentController</code> is the clearest example: a single one-line delegation.</p>
+
+<h2>9.2 Common Controller Annotations</h2>
+<ul>
+  <li><code>@RestController</code> &mdash; a controller whose return values are written directly to the HTTP body as JSON (combines <code>@Controller</code> + <code>@ResponseBody</code>).</li>
+  <li><code>@RequestMapping("/path")</code> &mdash; the shared base path for all methods in the class.</li>
+  <li><code>@GetMapping</code> / <code>@PostMapping</code> / <code>@PutMapping</code> &mdash; map a method to HTTP GET / POST / PUT at a sub-path.</li>
+  <li><code>@PathVariable</code> &mdash; binds a <code>{placeholder}</code> URL segment to a parameter.</li>
+  <li><code>@RequestParam</code> &mdash; binds a query-string parameter (supports <code>required=false</code> and <code>defaultValue</code>).</li>
+  <li><code>@RequestBody</code> &mdash; deserializes the JSON body into a DTO.</li>
+  <li><code>@Valid</code> &mdash; triggers Bean Validation on the DTO before the method runs.</li>
+  <li><code>@PreAuthorize("...")</code> &mdash; a method-level security gate using SpEL (<code>hasRole('ADM')</code>, <code>hasAnyRole('ADM','DS')</code>). Spring matches the <code>ROLE_</code>-prefixed authority the JWT filter installs.</li>
+  <li><strong>Constructor injection</strong> &mdash; dependencies are <code>final</code> fields set through the constructor (no <code>@Autowired</code> needed for a single constructor).</li>
+</ul>
+
+<h2>9.3 AuthController</h2>
+<p><strong>File:</strong> <code>controller/AuthController.java</code> &mdash; base path <code>/iam/auth</code>. The public entry point into authentication. Dependencies: <code>AuthService</code>, <code>AuditService</code>.</p>
+<div class="table-wrap"><table>
+  <tr><th>Method</th><th>Verb + path</th><th>Access</th><th>Body / input</th><th>Result</th></tr>
+  <tr><td><code>register</code></td><td>POST /iam/auth/register</td><td>Public</td><td><code>@Valid RegisterRequest</code> + <code>HttpServletRequest</code></td><td>201 + &ldquo;Registration successful&rdquo;</td></tr>
+  <tr><td><code>citizenLogin</code></td><td>POST /iam/auth/citizen/login</td><td>Public</td><td><code>@Valid CitizenLoginRequest</code></td><td>200 + <code>AuthResponse</code> (JWT)</td></tr>
+  <tr><td><code>staffLogin</code></td><td>POST /iam/auth/staff/login</td><td>Public</td><td><code>@Valid StaffLoginRequest</code></td><td>200 + <code>AuthResponse</code> (JWT)</td></tr>
+  <tr><td><code>setPassword</code></td><td>POST /iam/auth/setPassword</td><td>Public</td><td><code>@Valid SetPasswordRequest</code></td><td>200 + &ldquo;Password set successfully&rdquo;</td></tr>
+  <tr><td><code>logout</code></td><td>POST /iam/auth/logout</td><td>Authenticated</td><td><code>HttpServletRequest</code></td><td>200; records a <code>LOGOUT</code> audit entry</td></tr>
+</table></div>
+<p>Login/register audit logging is delegated into the service (the IP is passed through); <code>logout</code> audits directly in the controller. Because the API is stateless, logout does not invalidate the token server-side &mdash; it records the event and the client discards the token.</p>
+
+<h2>9.4 UserController</h2>
+<p><strong>File:</strong> <code>controller/UserController.java</code> &mdash; base path <code>/iam/users</code>. Dependencies: <code>UserService</code>, <code>AuditService</code>.</p>
+<div class="table-wrap"><table>
+  <tr><th>Method</th><th>Verb + path</th><th>Access</th><th>Notes</th></tr>
+  <tr><td><code>getMe</code></td><td>GET /iam/users/me</td><td>Any authenticated user</td><td>Returns the caller&rsquo;s own profile (id from the security context).</td></tr>
+  <tr><td><code>createUser</code></td><td>POST /iam/users</td><td><code>hasAnyRole('ADM','DS')</code></td><td>201. Passes caller role + id into the service so it can enforce the creation rules; audits <code>CREATE_USER</code>.</td></tr>
+  <tr><td><code>getUsers</code></td><td>GET /iam/users</td><td><code>hasAnyRole('ADM','DS')</code></td><td>Optional <code>role</code>, <code>status</code>, <code>departmentId</code>, <code>page</code> (0), <code>size</code> (10). Returns a paged list.</td></tr>
+  <tr><td><code>updateStatus</code></td><td>PUT /iam/users/{id}/status</td><td><code>hasRole('ADM')</code></td><td><code>@PathVariable id</code> + <code>@Valid UpdateUserStatusRequest</code>; audits <code>UPDATE_STATUS</code>.</td></tr>
+</table></div>
+
+<h2>9.5 AuditLogController</h2>
+<p><strong>File:</strong> <code>controller/AuditLogController.java</code> &mdash; base path <code>/iam/auditLogs</code>. A single read-only endpoint.</p>
+<div class="table-wrap"><table>
+  <tr><th>Method</th><th>Verb + path</th><th>Access</th><th>Notes</th></tr>
+  <tr><td><code>getAuditLogs</code></td><td>GET /iam/auditLogs</td><td><code>hasAnyRole('ADM','CO')</code></td><td>Newest-first. Optional <code>userId</code>, <code>action</code>, <code>module</code>, <code>page</code> (0), <code>size</code> (20). This controller only <em>reads</em> the trail; writing happens elsewhere via <code>auditService.log</code>.</td></tr>
+</table></div>
+
+<h2>9.6 DepartmentController</h2>
+<p><strong>File:</strong> <code>controller/DepartmentController.java</code> &mdash; base path <code>/iam/departments</code>.</p>
+<div class="table-wrap"><table>
+  <tr><th>Method</th><th>Verb + path</th><th>Access</th><th>Notes</th></tr>
+  <tr><td><code>getDepartments</code></td><td>GET /iam/departments</td><td><code>hasAnyRole('ADM','DS')</code></td><td>Lists all departments (e.g. to pick a valid <code>departmentId</code> when creating a supervisor). The thinnest controller &mdash; a single delegation.</td></tr>
+</table></div>
+</div>
+
+<div class="section-card" id="s10">
+<h1>10. Security &amp; JWT Authentication (In Depth)</h1>
+<p>This is the core of an IAM module. This section explains JWT conceptually, then walks through every line of the code that issues, transmits, validates, and authorizes with tokens.</p>
+
+<h2>10.1 What Is a JWT?</h2>
+<p>A <strong>JSON Web Token (JWT)</strong> is a compact, URL-safe, self-contained credential. &ldquo;Self-contained&rdquo; means the token itself carries the identity facts (claims) the server needs &mdash; the server does not look anything up in a session store to know who the caller is. In CivicDesk, a successful login produces a JWT, and the client sends it back on every request as the header <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+
+<h2>10.2 The Three Parts of a JWT</h2>
+<p>A JWT is three Base64URL segments joined by dots: <code>header.payload.signature</code>.</p>
+<pre>  eyJhbGciOiJIUzI1NiJ9 . eyJ1c2VySWQiOiIxMDAwMDAwMSIsInJvbGUiOiJBRE0iLCJpYXQiOi4uLn0 . 3x9Kk2...signature
+  └──── HEADER ────┘   └──────────────── PAYLOAD (claims) ────────────────┘   └─── SIGNATURE ───┘</pre>
+<ul>
+  <li><strong>Header</strong> &mdash; JSON metadata about the token, notably the signing algorithm. JJWT writes <code>{"alg":"HS256"}</code>.</li>
+  <li><strong>Payload (claims)</strong> &mdash; the data. This codebase puts:
+    <ul>
+      <li><code>userId</code> &mdash; the user&rsquo;s id &rarr; becomes the Spring Security <strong>principal</strong>.</li>
+      <li><code>role</code> &mdash; the user&rsquo;s role &rarr; becomes the <code>ROLE_&lt;role&gt;</code> <strong>authority</strong>.</li>
+      <li><code>iat</code> (issued-at) and <code>exp</code> (expiration, 30 minutes out).</li>
+    </ul>
+    Claims are only Base64URL-<strong>encoded</strong>, not encrypted &mdash; anyone can read them, so no secrets are placed there.</li>
+  <li><strong>Signature</strong> &mdash; proves the token was issued by this server and has not been altered.</li>
+</ul>
+
+<h2>10.3 How HS256 Signing Works</h2>
+<p>HS256 = <strong>HMAC with SHA-256</strong>, a <em>symmetric</em> scheme. The server computes:</p>
+<pre>signature = HMAC_SHA256( base64url(header) + "." + base64url(payload), SECRET )</pre>
+<p>using the single shared secret from <code>app.jwt.secret</code>. On every request, validation recomputes the HMAC over the received <code>header.payload</code> with the same secret and checks it matches the token&rsquo;s signature. If even one byte of the payload changed (e.g. an attacker editing <code>role</code> to gain admin), the recomputed signature would not match and verification fails. Because the same secret signs and verifies, it must stay server-side only &mdash; HS256 also requires the secret to be at least 256 bits / 32 bytes, which is why the configured secret is &ldquo;minimum_32_characters&rdquo;.</p>
+
+<h2>10.4 Token Generation &amp; Verification &mdash; JwtUtil</h2>
+<p><strong>File:</strong> <code>common/util/JwtUtil.java</code> (<code>@Component</code>, injects <code>JwtConfig</code>)</p>
+<ul>
+  <li><strong>Signing key</strong> &mdash; <code>getKey()</code> derives an HMAC-SHA key from the UTF-8 bytes of the secret via <code>Keys.hmacShaKeyFor(...)</code>.</li>
+  <li><strong><code>generateToken(userId, role)</code></strong> &mdash; builds the token: <code>.claim("userId", userId)</code>, <code>.claim("role", role)</code>, <code>.issuedAt(now)</code>, <code>.expiration(now + expiry)</code>, <code>.signWith(getKey())</code> (HS256 inferred), <code>.compact()</code>.</li>
+  <li><strong><code>validateToken(token)</code></strong> &mdash; parses and verifies signature/structure/expiry; returns <code>true</code> on success, <code>false</code> on any exception (bad signature, malformed, expired).</li>
+  <li><strong><code>extractClaims / extractUserId / extractRole / extractExpiration</code></strong> &mdash; verify and read the payload; unlike <code>validateToken</code>, these <em>throw</em> on an invalid/expired token. <code>extractExpiration</code> feeds the sliding-expiry refresh.</li>
+</ul>
+
+<h2>10.5 The Per-Request Gatekeeper &mdash; JwtAuthFilter</h2>
+<p><strong>File:</strong> <code>module/iam/security/JwtAuthFilter.java</code> (extends <code>OncePerRequestFilter</code>)</p>
+<p><strong>Why <code>OncePerRequestFilter</code>?</strong> It guarantees the filter runs exactly once per HTTP request even across internal forwards/async dispatches &mdash; you do not want to re-parse the token or re-populate the context multiple times.</p>
+<h4><code>doFilterInternal(req, res, chain)</code> &mdash; step by step</h4>
+<ol>
+  <li>Read the <code>Authorization</code> header.</li>
+  <li>If it is missing or does not start with <code>"Bearer "</code>, <strong>pass through unauthenticated</strong> (<code>chain.doFilter</code>) &mdash; this is what lets the <code>permitAll()</code> endpoints work without a token; protected routes are rejected later by the 401 entry point.</li>
+  <li>Strip the <code>"Bearer "</code> prefix to get the raw token.</li>
+  <li>If <code>!jwtUtil.validateToken(token)</code>, set status <strong>401</strong> and stop &mdash; an invalid/expired/tampered token is rejected immediately.</li>
+  <li>Extract <code>role</code> and <code>userId</code> from the verified token.</li>
+  <li>Build a <code>UsernamePasswordAuthenticationToken</code> with principal = <code>userId</code>, credentials = <code>null</code>, and a single authority <code>"ROLE_" + role</code> (the <code>ROLE_</code> prefix is what <code>hasRole(...)</code> expects). The 3-argument constructor marks it authenticated.</li>
+  <li>Store it in <code>SecurityContextHolder</code> &mdash; the caller is now authenticated for the rest of the request.</li>
+  <li><strong>Sliding-expiry refresh:</strong> compute seconds remaining from the <code>exp</code> claim; if <code>&le; 600</code> (10 minutes), mint a fresh 30-minute token and return it on the response <code>Authorization</code> header, plus <code>Access-Control-Expose-Headers: Authorization</code> so browsers let JavaScript read it. Active users stay logged in without re-authenticating, with no server-side state.</li>
+  <li>Continue the chain to the controller.</li>
+</ol>
+<div class="table-wrap"><table>
+  <tr><th>Token state</th><th>Behavior</th></tr>
+  <tr><td>Missing / not &ldquo;Bearer &rdquo;</td><td>Pass through unauthenticated; protected routes 401 via the entry point.</td></tr>
+  <tr><td>Present but invalid / expired / tampered</td><td>Immediate 401; chain stops.</td></tr>
+  <tr><td>Valid</td><td>Authenticate, optionally refresh, continue.</td></tr>
+</table></div>
+<p><strong>Annotation:</strong> <code>@Component</code> (so <code>SecurityConfig</code> can inject it). It is wired explicitly with <code>addFilterBefore(...)</code> rather than auto-registered.</p>
+
+<h2>10.6 Why JWT Is Stateless (and Why It Matters Here)</h2>
+<p>Because all identity data and a tamper-proof signature travel <em>inside</em> the token, the server keeps no session record. That is why <code>SecurityConfig</code> uses <code>SessionCreationPolicy.STATELESS</code> and <code>JwtAuthFilter</code> rebuilds the <code>Authentication</code> from scratch on every request. Any server instance holding the shared secret can verify any token &mdash; no sticky sessions and no shared session store, which makes horizontal scaling trivial.</p>
+
+<h2>10.7 The Authorization Process (RBAC)</h2>
+<ul>
+  <li>The filter installs a <code>ROLE_&lt;role&gt;</code> authority from the token&rsquo;s <code>role</code> claim.</li>
+  <li><code>@EnableMethodSecurity</code> (in <code>SecurityConfig</code>) activates <code>@PreAuthorize</code> on controller methods.</li>
+  <li>Each protected endpoint declares its rule: <code>hasRole('ADM')</code> (status updates), <code>hasAnyRole('ADM','DS')</code> (user management, departments), <code>hasAnyRole('ADM','CO')</code> (audit logs).</li>
+  <li>If the role does not satisfy the rule, Spring throws <code>AccessDeniedException</code>, which <code>GlobalExceptionHandler</code> turns into a clean <strong>403</strong>.</li>
+  <li>Finer business rules that a single role check cannot express (e.g. &ldquo;a DS may only see their own department&rdquo;) are enforced in the service layer using the caller&rsquo;s id/role.</li>
+</ul>
+
+<h2>10.8 Advantages &amp; Limitations of This Design</h2>
+<div class="table-wrap"><table>
+  <tr><th>Advantages</th><th>Limitations</th></tr>
+  <tr><td>No session store &rarr; easy horizontal scaling.</td><td>Hard to revoke before expiry &mdash; a leaked token is valid until <code>exp</code> (up to 30 min); there is no server-side blacklist.</td></tr>
+  <tr><td>Decoupled &amp; reusable &mdash; every module trusts the same <code>userId</code>/<code>role</code> claims (<code>JwtUtil</code> is shared across teams).</td><td>Symmetric secret &mdash; the same secret signs and verifies, so a leak lets attackers forge tokens (RS256/ES256 would avoid sharing the signing key).</td></tr>
+  <tr><td>Fast authorization &mdash; the role comes straight from the token, no per-request DB hit.</td><td>Payload is readable (encoded, not encrypted) &mdash; never store sensitive data in claims.</td></tr>
+  <tr><td>Built-in expiry + sliding refresh keeps active users logged in smoothly.</td><td>Sliding refresh can extend an actively-used token indefinitely &mdash; there is no absolute session cap.</td></tr>
+</table></div>
+</div>
+
+<div class="section-card" id="s11">
+<h1>11. End-to-End Flows</h1>
+
+<h2>11.1 Generic Request Flow (API call &rarr; Controller &rarr; Service &rarr; DB &rarr; Response)</h2>
+<pre>1. Client sends an HTTP request with  Authorization: Bearer &lt;jwt&gt;
+2. CORS filter            → applies the allowed-origins policy (CorsConfig)
+3. JwtAuthFilter          → validates the token, sets the SecurityContext (principal + ROLE_x)
+4. Authorization          → URL rule (authorizeHttpRequests) + @PreAuthorize role check
+5. Controller method      → reads body/params (@RequestBody/@RequestParam), @Valid runs
+6. Service method         → business rules, calls repositories, hashes/issues tokens, audits
+7. Repository (JPA)       → Hibernate generates SQL against MySQL/H2
+8. Entity ↔ DTO           → service maps entities to response DTOs (e.g. UserResponse.from)
+9. Controller             → wraps the DTO in ApiResponse  →  Jackson serializes to JSON
+10. (any exception)       → GlobalExceptionHandler maps it to {message} + the right status
+11. Response returned     → standard envelope { success?, statusCode?, message, data, timestamp }</pre>
+
+<h2>11.2 Authentication Flow (Login &rarr; Token)</h2>
+<pre>POST /iam/auth/citizen/login   { email, password }
+   │
+   ▼
+AuthController.citizenLogin → AuthServiceImpl.citizenLogin
+   │  authenticate(): findByEmail → check passwordSet → passwordEncoder.matches → status gate
+   │  portal check: must be a CIT (else 403 "use the staff portal")
+   ▼
+issueToken(): JwtUtil.generateToken(userId, role)  +  audit LOGIN
+   ▼
+AuthResponse { token, userId, role, expiresIn=1800 }   →   200 OK
+   │
+   ▼
+Client stores the token and sends it on every subsequent request.</pre>
+
+<h2>11.3 Staff Onboarding Flow (Set-Password on First Login)</h2>
+<pre>Admin creates staff (no password)            → isPasswordSet = false
+Staff POST /iam/auth/staff/login             → 403 "Please set your password before logging in"
+Staff POST /iam/auth/setPassword             → validates length, BCrypt-hashes,
+   { email, newPassword }                       sets isPasswordSet = true   (200)
+Staff POST /iam/auth/staff/login again       → 200 + JWT
+(setPassword works ONCE per account; afterwards → 403, use a reset flow)</pre>
+
+<h2>11.4 Data Flow Between Layers</h2>
+<ul>
+  <li><strong>Inbound:</strong> JSON &rarr; <strong>request DTO</strong> (validated by <code>@Valid</code>) &rarr; service &rarr; <strong>entity</strong> &rarr; repository &rarr; database.</li>
+  <li><strong>Outbound:</strong> database &rarr; repository &rarr; <strong>entity</strong> &rarr; service maps to <strong>response DTO</strong> (<code>from(...)</code>) &rarr; wrapped in <code>ApiResponse</code>/<code>PageResponse</code> &rarr; JSON.</li>
+  <li>Entities never cross the controller boundary, so the database shape never leaks to clients.</li>
+</ul>
+</div>
+
+<div class="section-card" id="s12">
+<h1>12. Complete Annotation Reference</h1>
+<p>Every annotation used in the project, grouped by family, with what it does and why.</p>
+
+<h2>12.1 Core Spring / Stereotypes</h2>
+<div class="table-wrap"><table>
+  <tr><th>Annotation</th><th>What it does &amp; why</th></tr>
+  <tr><td><code>@SpringBootApplication</code></td><td>Bootstraps the app (config + auto-configuration + component scan). One per application.</td></tr>
+  <tr><td><code>@Configuration</code></td><td>Marks a class that declares <code>@Bean</code> definitions.</td></tr>
+  <tr><td><code>@Bean</code></td><td>Registers a method&rsquo;s return value as a Spring-managed bean.</td></tr>
+  <tr><td><code>@Component</code></td><td>Generic stereotype for a Spring-managed bean (used for <code>DataSeeder</code>, <code>JwtUtil</code>, <code>JwtAuthFilter</code>).</td></tr>
+  <tr><td><code>@Service</code></td><td>Stereotype for a business-logic bean (a specialization of <code>@Component</code>); communicates intent and is the conventional home for transactions.</td></tr>
+  <tr><td><code>@Repository</code></td><td>Stereotype for a data-access bean; also translates persistence exceptions into Spring&rsquo;s <code>DataAccessException</code> hierarchy.</td></tr>
+  <tr><td><code>@RestController</code></td><td><code>@Controller</code> + <code>@ResponseBody</code> &mdash; return values become the JSON response body.</td></tr>
+  <tr><td><code>@Value("${key}")</code></td><td>Injects a single property value (with optional default after a colon).</td></tr>
+  <tr><td><code>@ConfigurationProperties(prefix)</code></td><td>Binds a group of properties to a typed object (used by <code>JwtConfig</code>).</td></tr>
+  <tr><td><code>@Autowired</code> / constructor injection</td><td>Dependency injection. This project favours <em>constructor injection</em> (final fields, no annotation needed for a single constructor) over field <code>@Autowired</code> &mdash; it yields immutable, explicit, test-friendly dependencies.</td></tr>
+</table></div>
+
+<h2>12.2 Web / MVC</h2>
+<div class="table-wrap"><table>
+  <tr><th>Annotation</th><th>What it does &amp; why</th></tr>
+  <tr><td><code>@RequestMapping</code></td><td>Class-level base path (and, generally, method+path mappings).</td></tr>
+  <tr><td><code>@GetMapping</code> / <code>@PostMapping</code> / <code>@PutMapping</code></td><td>Shorthands binding a method to GET / POST / PUT at a sub-path.</td></tr>
+  <tr><td><code>@PathVariable</code></td><td>Binds a URL path segment to a parameter.</td></tr>
+  <tr><td><code>@RequestParam</code></td><td>Binds a query-string parameter (supports defaults / optionality).</td></tr>
+  <tr><td><code>@RequestBody</code></td><td>Deserializes the JSON request body into a DTO.</td></tr>
+  <tr><td><code>@RestControllerAdvice</code></td><td>Global exception-handling advice for all controllers (used by <code>GlobalExceptionHandler</code>).</td></tr>
+  <tr><td><code>@ExceptionHandler(Type.class)</code></td><td>Marks a method that handles a specific exception type.</td></tr>
+</table></div>
+
+<h2>12.3 Security</h2>
+<div class="table-wrap"><table>
+  <tr><th>Annotation</th><th>What it does &amp; why</th></tr>
+  <tr><td><code>@EnableMethodSecurity</code></td><td>Turns on method-level security so <code>@PreAuthorize</code> is enforced.</td></tr>
+  <tr><td><code>@PreAuthorize("hasRole(...)")</code></td><td>Gates a method on a SpEL authorization expression before it runs.</td></tr>
+</table></div>
+
+<h2>12.4 JPA / Hibernate (Persistence)</h2>
+<div class="table-wrap"><table>
+  <tr><th>Annotation</th><th>What it does &amp; why</th></tr>
+  <tr><td><code>@Entity</code></td><td>Marks a class as a persistent JPA entity mapped to a table.</td></tr>
+  <tr><td><code>@Table(name, indexes)</code></td><td>Specifies the table name and secondary indexes.</td></tr>
+  <tr><td><code>@Id</code></td><td>Marks the primary-key field.</td></tr>
+  <tr><td><code>@GeneratedValue(generator)</code></td><td>Delegates primary-key generation to a named generator.</td></tr>
+  <tr><td><code>@GenericGenerator</code> / <code>@Parameter</code></td><td>Hibernate hook to a custom generator class (here, <code>NumericStringSequenceGenerator</code>) with parameters.</td></tr>
+  <tr><td><code>@Column(...)</code></td><td>Maps a field to a column with length / nullable / unique constraints.</td></tr>
+  <tr><td><code>@CreationTimestamp</code> / <code>@UpdateTimestamp</code></td><td>Hibernate auto-populates timestamps at insert / on update.</td></tr>
+  <tr><td><code>@Transactional</code></td><td>Wraps a method in a database transaction (commit on success, rollback on a runtime exception). Used on multi-write service methods so they are atomic.</td></tr>
+</table></div>
+
+<h2>12.5 Validation (Jakarta Bean Validation)</h2>
+<div class="table-wrap"><table>
+  <tr><th>Annotation</th><th>What it does &amp; why</th></tr>
+  <tr><td><code>@Valid</code></td><td>On a controller parameter, triggers validation of the DTO.</td></tr>
+  <tr><td><code>@NotBlank</code> / <code>@NotNull</code></td><td>Required value (non-blank string / non-null).</td></tr>
+  <tr><td><code>@Email</code></td><td>Must be a valid email address.</td></tr>
+  <tr><td><code>@Size(min,max)</code></td><td>Bounds string length.</td></tr>
+  <tr><td><code>@Pattern(regexp)</code></td><td>Must match a regular expression (phone, role/status whitelists, date format).</td></tr>
+</table></div>
+
+<h2>12.6 Jackson (JSON)</h2>
+<div class="table-wrap"><table>
+  <tr><th>Annotation</th><th>What it does &amp; why</th></tr>
+  <tr><td><code>@JsonInclude(NON_NULL)</code></td><td>Omits null fields when serializing (clean envelopes in <code>ApiResponse</code>).</td></tr>
+  <tr><td><code>@JsonPropertyOrder</code></td><td>Fixes JSON field order for deterministic output (<code>ErrorResponse</code>).</td></tr>
+</table></div>
+
+<h2>12.7 Lombok &mdash; Note</h2>
+<div class="note">Lombok is commonly used in Spring projects to remove boilerplate. <strong>This codebase does not use Lombok</strong> &mdash; all getters/setters/constructors are hand-written. For completeness: <code>@Data</code> generates getters, setters, <code>toString</code>, <code>equals</code>/<code>hashCode</code>; <code>@Getter</code>/<code>@Setter</code> generate accessors; <code>@Builder</code> generates a fluent builder; <code>@NoArgsConstructor</code>/<code>@AllArgsConstructor</code> generate constructors. None appear in the source.</div>
+
+<h2>12.8 Testing Annotations</h2>
+<p>See <strong>Section 14</strong> for the full list (<code>@Test</code>, <code>@BeforeEach</code>, <code>@ExtendWith</code>, <code>@Mock</code>, <code>@InjectMocks</code>, <code>@SpringBootTest</code>, <code>@WebMvcTest</code>, <code>@DataJpaTest</code>, <code>@WithMockUser</code>, etc.).</p>
+</div>
+
+<div class="section-card" id="s13">
+<h1>13. Error Handling, Logging &amp; Configuration</h1>
+
+<h2>13.1 Error-Handling Strategy</h2>
+<ul>
+  <li><strong>Domain exceptions</strong> express business failures (e.g. <code>DuplicateEmailException</code>, <code>AccountSuspendedException</code>). Business code throws these without knowing about HTTP.</li>
+  <li><strong>One central handler</strong> (<code>@RestControllerAdvice</code>) maps each exception to a specific HTTP status and a uniform <code>ApiResponse.error(message)</code> body (see Section 5.2).</li>
+  <li><strong>Validation failures</strong> are handled too: a failed <code>@Valid</code> body produces a 400 with all field errors joined into one message.</li>
+  <li><strong>Security failures</strong> are consistent: 401 for missing/invalid tokens (filter + entry point), 403 for failed role checks (<code>AccessDeniedException</code>).</li>
+  <li><strong>Anti-enumeration:</strong> login uses the same &ldquo;Invalid email or password&rdquo; for both unknown-email and wrong-password, so attackers cannot probe which emails exist.</li>
+</ul>
+
+<h2>13.2 Logging Practices</h2>
+<ul>
+  <li><strong>Application logging</strong> uses SLF4J (e.g. <code>DataSeeder</code> logs seeded departments/admin). SQL logging is controlled per profile (<code>spring.jpa.show-sql</code>, <code>logging.level.org.hibernate.SQL</code>).</li>
+  <li><strong>Audit logging</strong> is a distinct, business-level concern persisted to the <code>audit_log</code> table (not a log file): who did what, in which module, from which IP, when. It is queryable via <code>GET /iam/auditLogs</code> for compliance.</li>
+</ul>
+
+<h2>13.3 Configuration Files</h2>
+<p>The app uses Spring profiles so the same build runs differently per environment.</p>
+<div class="table-wrap"><table>
+  <tr><th>File</th><th>Key settings</th></tr>
+  <tr><td><code>application.properties</code> (default)</td><td>App name; MySQL datasource (<code>...civicdesk?createDatabaseIfNotExist=true</code>); <code>ddl-auto=update</code>; <code>show-sql=true</code>; MySQL8 dialect; JWT secret + <code>expiry=1800000</code> ms (30 min); admin seed properties (env-overridable); <code>server.port=8081</code>; <code>context-path=/civicDesk</code>.</td></tr>
+  <tr><td><code>application-dev.properties</code></td><td>Verbose development: <code>ddl-auto=update</code>, <code>show-sql=true</code>, <code>format_sql=true</code>, Hibernate SQL at DEBUG.</td></tr>
+  <tr><td><code>application-prod.properties</code></td><td>Production-safe: <code>ddl-auto=validate</code> (never auto-create &mdash; schema is migration-managed), no SQL logging; datasource and JWT secret come <strong>only</strong> from environment variables (<code>DB_URL</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code>, <code>JWT_SECRET</code>) &mdash; no secrets committed.</td></tr>
+  <tr><td><code>application-test.properties</code> (tests)</td><td>In-memory H2 with the <code>test</code> profile; same JWT expiry so token math matches.</td></tr>
+</table></div>
+<p>Every endpoint is served under the context path <code>/civicDesk</code> plus the module prefix <code>/iam</code>, e.g. <code>http://localhost:8081/civicDesk/iam/...</code>. Swagger UI is at <code>/civicDesk/swagger-ui.html</code>.</p>
+
+<h2>13.4 External Dependencies (Runtime Services)</h2>
+<ul>
+  <li><strong>MySQL 8</strong> &mdash; the production datastore (auto-created on first run in dev).</li>
+  <li><strong>Environment variables</strong> &mdash; in production: <code>DB_URL/USERNAME/PASSWORD</code>, <code>JWT_SECRET</code>, and the <code>ADMIN_*</code> seed values.</li>
+  <li><strong>Docker</strong> &mdash; the README documents building/running a container image (<code>docker run -p 8081:8081 --env-file .env</code>).</li>
+</ul>
+</div>
+
+<div class="section-card" id="s14">
+<h1>14. Testing (JUnit &amp; Mockito)</h1>
+
+<h2>14.1 Purpose of Testing &amp; the Test Pyramid</h2>
+<p>Automated tests verify behaviour, catch regressions, document expected behaviour (test names read like a spec), and let the team refactor with confidence. This module layers its tests into the classic pyramid:</p>
+<ul>
+  <li><strong>Unit tests</strong> &mdash; one class in isolation with mocked dependencies (fast, narrow).</li>
+  <li><strong>Slice tests</strong> &mdash; load just one layer: <code>@WebMvcTest</code> (controllers) or <code>@DataJpaTest</code> (repositories against H2).</li>
+  <li><strong>Integration tests</strong> &mdash; the full Spring context + real H2 + real security filter chain (broad, end-to-end).</li>
+</ul>
+
+<h2>14.2 Testing Annotations Explained</h2>
+<div class="table-wrap"><table>
+  <tr><th>Annotation</th><th>Meaning</th></tr>
+  <tr><td><code>@Test</code></td><td>Marks a JUnit 5 test method.</td></tr>
+  <tr><td><code>@BeforeEach</code> / <code>@AfterEach</code></td><td>Run before / after every test (e.g. seed data; clear the SecurityContext) to keep tests independent.</td></tr>
+  <tr><td><code>@ExtendWith(MockitoExtension.class)</code></td><td>Enables Mockito for the test class (initializes mocks, validates stubbing).</td></tr>
+  <tr><td><code>@Mock</code></td><td>Creates a fake collaborator whose behaviour you script.</td></tr>
+  <tr><td><code>@InjectMocks</code></td><td>Instantiates the class under test and injects the mocks into it.</td></tr>
+  <tr><td><code>@SpringBootTest</code></td><td>Loads the full application context (integration test).</td></tr>
+  <tr><td><code>@WebMvcTest(X.class)</code></td><td>Loads only the MVC slice for one controller (HTTP, JSON, validation).</td></tr>
+  <tr><td><code>@DataJpaTest</code></td><td>Loads only the JPA slice (entities + repositories) against an embedded DB; each test rolls back.</td></tr>
+  <tr><td><code>@AutoConfigureMockMvc</code></td><td>Provides <code>MockMvc</code>, a fake HTTP client (with or without the security filters).</td></tr>
+  <tr><td><code>@MockitoBean</code></td><td>Places a Mockito mock into the Spring (slice) context, replacing the real bean.</td></tr>
+  <tr><td><code>@WithMockUser(roles=...)</code></td><td>Runs a test as a fake authenticated user with given roles.</td></tr>
+  <tr><td><code>@ActiveProfiles("test")</code></td><td>Activates the <code>test</code> profile (H2 configuration).</td></tr>
+  <tr><td><code>@AutoConfigureTestDatabase(replace=NONE)</code></td><td>Use the configured datasource instead of swapping in a default embedded DB.</td></tr>
+</table></div>
+
+<h2>14.3 Mockito &amp; Why Mocking Is Required</h2>
+<p>A mock is a scripted stand-in for a real collaborator. Using real databases/encoders/HTTP objects in a unit test would be slow, non-deterministic, and would blur which class actually failed. Mocking lets you isolate one unit, drive every branch (force a repository to return empty to hit a &ldquo;not found&rdquo; path), run fast with no I/O, and verify side-effects. Key patterns used:</p>
+<ul>
+  <li><code>when(dep.method(args)).thenReturn(value)</code> &mdash; stub a return value.</li>
+  <li><code>verify(mock).method(args)</code> / <code>verify(mock, never())...</code> / <code>verifyNoInteractions(mock)</code> &mdash; assert (or refute) that calls happened.</li>
+  <li>Argument matchers <code>any()</code>, <code>anyString()</code>, <code>eq(value)</code>.</li>
+  <li><code>ArgumentCaptor</code> &mdash; capture the object passed into a mock and inspect it (used to verify the <code>AuditLog</code> built inside the service).</li>
+</ul>
+
+<h2>14.4 The Test Suite, File by File</h2>
+<div class="table-wrap"><table>
+  <tr><th>Test file</th><th>Type</th><th>What it validates</th></tr>
+  <tr><td><code>CivicDeskApplicationTests</code></td><td>Integration smoke</td><td>The full Spring context boots (<code>contextLoads()</code>).</td></tr>
+  <tr><td><code>NationalIdUtilTest</code></td><td>Pure unit</td><td>SHA-256 hashing is deterministic and 64 hex chars; null/blank &rarr; null; <code>maskLast4</code> masks all but the last four.</td></tr>
+  <tr><td><code>JwtUtilTest</code></td><td>Spring context</td><td>Token generation, validation, and role extraction round-trip with the real signing key.</td></tr>
+  <tr><td><code>JwtAuthFilterTest</code></td><td>Unit (mocked servlet)</td><td>Valid token sets principal/authority and continues; near-expiry token issues a fresh token on the response header; missing header passes through; invalid token &rarr; 401 and chain stops.</td></tr>
+  <tr><td><code>AuthServiceImplTest</code></td><td>Unit (mocked deps)</td><td>Happy-path login returns a token; wrong password, password-not-set, suspended, and wrong-portal cases throw the right exceptions; duplicate-email registration; the full set-password lifecycle.</td></tr>
+  <tr><td><code>UserServiceImplTest</code></td><td>Unit (mocked repos)</td><td>The creation decision tree: ADM creates DS (and back-links the department); ADM cannot create non-DS; DS requirement of a department; DS creating staff inherits its own department; supervisor cannot create admin; duplicate email.</td></tr>
+  <tr><td><code>AuditServiceImplTest</code></td><td>Unit (ArgumentCaptor)</td><td><code>log(...)</code> persists an <code>AuditLog</code> carrying exactly the supplied fields.</td></tr>
+  <tr><td><code>UserRepositoryTest</code></td><td>Slice (<code>@DataJpaTest</code>, H2)</td><td>Derived queries <code>findByEmail</code> / <code>existsByEmail</code> work against a real DB.</td></tr>
+  <tr><td><code>AuditLogRepositoryTest</code></td><td>Slice (<code>@DataJpaTest</code>, H2)</td><td>Per-user / newest-first queries and specification filters (action, module, case-normalized, combined) return the right rows.</td></tr>
+  <tr><td><code>AuthControllerTest</code></td><td>Slice (<code>@WebMvcTest</code>)</td><td>Login maps to 200 with the right JSON shape; missing email &rarr; 400 (validation) before the service is called.</td></tr>
+  <tr><td><code>UserControllerTest</code></td><td>Slice (<code>@WebMvcTest</code>, <code>@WithMockUser ADM</code>)</td><td>Admin create &rarr; 201; admin list &rarr; 200. (403 enforcement is deferred to the RBAC integration test.)</td></tr>
+  <tr><td><code>AuditLogControllerTest</code></td><td>Slice (<code>@WebMvcTest</code>)</td><td>ADM and CO can read; query params are forwarded to the service (verified with <code>eq(...)</code>).</td></tr>
+  <tr><td><code>AuthRequestValidationTest</code></td><td>Slice (validation)</td><td>Each invalid field (phone, email, password length, gender, date) yields a precise 400 and never reaches the service; valid/optional-omitted payloads pass.</td></tr>
+  <tr><td><code>UserRequestValidationTest</code></td><td>Slice (validation)</td><td>Invalid/blank phone, unknown role, malformed email, blank name, invalid status &rarr; 400 with the expected message; service untouched.</td></tr>
+  <tr><td><code>AuthIntegrationTest</code></td><td>Full stack (real filters + H2)</td><td>register &rarr; login &rarr; access protected endpoint with a real JWT; no token &rarr; 401; the full admin-creates-staff &rarr; set-password lifecycle.</td></tr>
+  <tr><td><code>RbacIntegrationTest</code></td><td>Full stack (real RBAC)</td><td>Admin can list users; citizen gets 403; admin creates a supervisor (201) and unknown department &rarr; 400; no token &rarr; 401.</td></tr>
+  <tr><td><code>IdGenerationIntegrationTest</code></td><td>Integration</td><td>Seeded admin is <code>10000001</code>; new users get consecutive numeric-string ids; audit ids are numeric; departments use <code>DPT##</code> codes.</td></tr>
+  <tr><td><code>AuditLogDataSeeder</code> / <code>CitizenDataSeeder</code> (in <code>test/util</code>)</td><td>Operational tooling (not tests)</td><td>Standalone JDBC <code>main()</code> utilities that bulk-load 100k audit rows / 50k citizens for local performance testing of the indexed filters.</td></tr>
+</table></div>
+
+<h2>14.5 Unit vs Integration &mdash; A Deliberate Division of Labour</h2>
+<p>The controller slice tests intentionally <em>defer</em> <code>@PreAuthorize</code> 403 enforcement to <code>RbacIntegrationTest</code>, because <code>@WebMvcTest</code> slices do not reliably enforce method security, but the full-stack tests (with the real filter chain) do. This is a good illustration of choosing the right test type for each guarantee.</p>
+</div>
+
+<div class="section-card" id="s15">
+<h1>15. Appendix: Endpoint Reference</h1>
+<p>All paths are shown after the context path. Full URL = <code>http://localhost:8081/civicDesk</code> + path. Every response uses the standard envelope <code>{ success, statusCode, message, data, timestamp }</code>.</p>
+<div class="table-wrap"><table>
+  <tr><th>Method</th><th>Path</th><th>Access</th><th>Notes</th></tr>
+  <tr><td>POST</td><td>/iam/auth/register</td><td>Public</td><td>Citizen self-registration &rarr; 201.</td></tr>
+  <tr><td>POST</td><td>/iam/auth/citizen/login</td><td>Public</td><td>CIT only (staff &rarr; 403); returns JWT.</td></tr>
+  <tr><td>POST</td><td>/iam/auth/staff/login</td><td>Public</td><td>Staff only (CIT &rarr; 403); password-not-set &rarr; 403; suspended &rarr; 423; returns JWT.</td></tr>
+  <tr><td>POST</td><td>/iam/auth/setPassword</td><td>Public</td><td>First-time password setup (one-time per account).</td></tr>
+  <tr><td>POST</td><td>/iam/auth/logout</td><td>Authenticated</td><td>Audit-logged; client clears the token.</td></tr>
+  <tr><td>GET</td><td>/iam/users/me</td><td>Authenticated</td><td>Current user&rsquo;s own profile.</td></tr>
+  <tr><td>POST</td><td>/iam/users</td><td>ADM, DS</td><td>ADM &rarr; creates DS; DS &rarr; creates FO/ENG/CO in own dept.</td></tr>
+  <tr><td>GET</td><td>/iam/users</td><td>ADM, DS</td><td>ADM: all users; DS: own dept, active only. Filters: role, status, departmentId, page, size.</td></tr>
+  <tr><td>PUT</td><td>/iam/users/{id}/status</td><td>ADM</td><td>Activate / suspend / deactivate a user.</td></tr>
+  <tr><td>GET</td><td>/iam/auditLogs</td><td>ADM, CO</td><td>Newest-first. Filters: userId, action, module, page, size.</td></tr>
+  <tr><td>GET</td><td>/iam/departments</td><td>ADM, DS</td><td>List departments (to pick a valid departmentId).</td></tr>
+</table></div>
+
+<h2>Roles Reference</h2>
+<p><code>CIT</code> Citizen &middot; <code>FO</code> Field Officer &middot; <code>DS</code> Dept. Supervisor &middot; <code>ENG</code> Engineer &middot; <code>CO</code> Coordinator/Compliance &middot; <code>ADM</code> Admin. These exact codes are the <code>@PreAuthorize</code> and <code>users.role</code> contract and must not be renamed.</p>
+
+<div class="note"><strong>End of document.</strong> This reference reflects the source code of the CivicDesk IAM module as analyzed file-by-file. Two minor observations surfaced during analysis: (1) the JWT contains <code>userId</code> and <code>role</code> claims (plus <code>iat</code>/<code>exp</code>) &mdash; there is no <code>email</code> claim; (2) <code>ErrorResponse</code> is defined for cross-module use but the IAM handler currently returns <code>ApiResponse</code>.</div>
+</div>
+
+
+</div><!-- end .content -->
+</div><!-- end #main -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&#8593;</button>
+<script>
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('progress-bar');
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  el.style.width = (window.scrollY / docH * 100) + '%';
+  const btn = document.getElementById('back-top');
+  if (window.scrollY > 400) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+}, {passive:true});
+
+const navItems = document.querySelectorAll('.nav-item');
+const sections = document.querySelectorAll('[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navItems.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+}, {passive:true});
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+navItems.forEach(a => a.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); }));
+</script>
+</body>
+</html>
