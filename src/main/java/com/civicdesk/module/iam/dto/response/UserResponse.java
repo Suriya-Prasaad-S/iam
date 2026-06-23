@@ -1,8 +1,8 @@
 package com.civicdesk.module.iam.dto.response;
 
-import com.civicdesk.module.iam.entity.User;
-
 import java.time.LocalDateTime;
+
+import com.civicdesk.module.iam.entity.User;
 
 /** Read model for a user — never exposes the password hash. */
 public class UserResponse {

@@ -1,20 +1,18 @@
 package com.civicdesk.common.util;
 
-import com.civicdesk.config.JwtConfig;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-/**
- * Issues and verifies stateless HS256 JWTs. Shared with ALL teammates — every
- * module's auth filter relies on these claims: {@code userId} and {@code role}.
- * Secret and expiry come from {@link JwtConfig}.
- */
+import javax.crypto.SecretKey;
+
+import org.springframework.stereotype.Component;
+
+import com.civicdesk.config.JwtConfig;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
 @Component
 public class JwtUtil {
 
@@ -56,7 +54,7 @@ public class JwtUtil {
         return extractClaims(token).get("role", String.class);
     }
 
-    /** Token expiry instant — used by the sliding-expiry refresh in JwtAuthFilter. */
+   
     public Date extractExpiration(String token) {
         return extractClaims(token).getExpiration();
     }

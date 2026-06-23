@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CivicDesk IAM — Detailed Interview Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#1c2430; --muted:#5c6675; --line:#e6e9ef; --bg:#f7f8fb;
+    --card:#ffffff; --accent:#3b5bdb; --accent-soft:#eef1ff;
+    --code-bg:#f4f5f8; --code-ink:#8a3b7a; --ok:#1f8a52; --warn:#b06a00;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:'Inter',system-ui,Segoe UI,Roboto,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;}
+  h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.2px;}
+
+  /* ---- top bar ---- */
+  .topbar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+    box-shadow:0 1px 4px rgba(20,30,50,.04);}
+  .topbar-inner{max-width:1160px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:14px;}
+  .brand{font-weight:800;font-size:.98rem;color:var(--accent);white-space:nowrap;}
+  .navscroll{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;}
+  .navscroll a{color:#3c4658;text-decoration:none;font-size:.76rem;font-weight:600;
+    padding:5px 9px;border-radius:7px;white-space:nowrap;}
+  .navscroll a:hover{background:var(--accent-soft);color:var(--accent);}
+
+  /* ---- hero ---- */
+  .hero{max-width:1160px;margin:0 auto;padding:30px 16px 6px;}
+  .hero h1{font-size:1.9rem;}
+  .hero .sub{color:var(--muted);margin-top:8px;max-width:820px;}
+  .stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:30px;padding:4px 11px;
+    font-size:.74rem;font-weight:600;color:#3c4658;}
+
+  /* ---- layout ---- */
+  .wrap{max-width:1160px;margin:0 auto;padding:18px 16px 60px;}
+  section{margin-top:30px;scroll-margin-top:64px;}
+  .sec-h{display:flex;align-items:baseline;gap:10px;border-left:4px solid var(--accent);
+    padding:4px 0 4px 12px;margin-bottom:6px;}
+  .sec-h h2{font-size:1.2rem;}
+  .sec-h .k{font-size:.72rem;font-weight:700;color:#fff;background:var(--accent);
+    padding:2px 8px;border-radius:20px;letter-spacing:.3px;}
+  .lead{color:var(--muted);font-size:.9rem;margin:0 0 12px 16px;}
+  .lead code{font-size:.84em;}
+
+  /* ---- tables ---- */
+  .tbl-wrap{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{background:#f1f3f8;text-align:left;padding:9px 12px;font-size:.72rem;
+    text-transform:uppercase;letter-spacing:.4px;color:#46506a;border-bottom:1px solid var(--line);}
+  td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.86rem;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:nth-child(even){background:#fafbfd;}
+  td.n{width:34px;text-align:center;color:#9aa3b2;font-weight:700;}
+  td.c{width:18%;font-weight:700;color:var(--ink);}
+  td.t{width:37%;color:#374050;}
+  td.w{width:42%;color:#3a4452;}
+  .why{display:block;margin-top:5px;color:var(--accent);font-size:.82rem;}
+  .why b{color:var(--accent);}
+  code{background:var(--code-bg);color:var(--code-ink);padding:1px 5px;border-radius:4px;
+    font-family:'SF Mono',Consolas,Menlo,monospace;font-size:.82em;}
+  .file{display:inline-block;background:#eef6ef;color:#1f6b42;border:1px solid #cfe6d6;
+    padding:1px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:.78em;
+    font-weight:600;margin:2px 0;word-break:break-all;}
+  pre{background:#1f2430;color:#e6e9ef;border-radius:8px;padding:10px 12px;overflow-x:auto;
+    margin:6px 0 0;font-size:.78rem;line-height:1.5;}
+  pre code{background:none;color:inherit;padding:0;}
+  .q{display:block;margin-top:6px;font-style:italic;color:#7a8395;font-size:.8rem;}
+  .q::before{content:"Q: ";font-style:normal;font-weight:700;color:#9aa3b2;}
+
+  .note{border-left:4px solid var(--warn);background:#fff8ee;padding:10px 14px;border-radius:0 8px 8px 0;
+    margin:0 0 12px 16px;font-size:.86rem;color:#6a4a16;}
+  .note b{color:var(--warn);}
+  .note.ok{border-color:var(--ok);background:#f0faf3;color:#205c39;}
+  .note.ok b{color:var(--ok);}
+
+  /* arch tree */
+  .tree{background:#1f2430;color:#cdd3df;border-radius:var(--radius);padding:16px 18px;
+    font-family:Consolas,monospace;font-size:.78rem;line-height:1.7;overflow-x:auto;}
+  .tree .d{color:#7fb0ff;} .tree .f{color:#9be3b4;} .tree .cmt{color:#7a8395;}
+
+  footer{max-width:1160px;margin:30px auto 0;padding:18px 16px 40px;color:var(--muted);
+    font-size:.84rem;border-top:1px solid var(--line);}
+  footer b{color:var(--ink);}
+  .top{position:fixed;right:16px;bottom:16px;background:var(--accent);color:#fff;width:42px;height:42px;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;
+    box-shadow:0 6px 16px rgba(59,91,219,.35);font-size:1.2rem;}
+
+  @media (max-width:760px){
+    td.c,td.t,td.w{width:auto;}
+    .hero h1{font-size:1.45rem;}
+  }
+  @media print{
+    .topbar,.top{display:none;}
+    body{background:#fff;font-size:12px;}
+    section{page-break-inside:avoid;}
+    pre,.tree{background:#f4f5f8;color:#1f2430;}
+    .tree .d,.tree .f,.tree .cmt{color:#1f2430;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="brand">CivicDesk IAM · Viva Guide</span>
+    <nav class="navscroll">
+      <a href="#map">Project Map</a>
+      <a href="#java">Java/OOP</a>
+      <a href="#core">Spring Core</a>
+      <a href="#maven">Maven</a>
+      <a href="#boot">Spring Boot</a>
+      <a href="#rest">REST</a>
+      <a href="#jpa">JPA/Hibernate</a>
+      <a href="#sql">MySQL</a>
+      <a href="#valid">Validation</a>
+      <a href="#security">Security/JWT</a>
+      <a href="#lombok">Lombok</a>
+      <a href="#log">Logging</a>
+      <a href="#test">JUnit/Mockito</a>
+      <a href="#design">Design/SOLID</a>
+      <a href="#dsa">DSA</a>
+      <a href="#agile">Agile/Git</a>
+      <a href="#cheat">Cheat Sheet</a>
+      <a href="#viva">Viva Q&amp;A</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <h1>CivicDesk IAM — Detailed Interview Preparation Guide</h1>
+  <p class="sub">Every concept mapped to the <b>exact file</b> in this project, <b>how</b> it is used there, and <b>why</b> that choice was made. Project: <code>com.civicdesk</code> — Module 2.1, Identity &amp; Access Management. Spring Boot <b>3.4.1</b>, Java <b>21</b>, MySQL, JWT-secured REST API.</p>
+  <div class="stack">
+    <span class="chip">Java 21</span>
+    <span class="chip">Spring Boot 3.4.1</span>
+    <span class="chip">Spring Security + JWT</span>
+    <span class="chip">Spring Data JPA + Hibernate</span>
+    <span class="chip">MySQL 8</span>
+    <span class="chip">Bean Validation</span>
+    <span class="chip">SLF4J</span>
+    <span class="chip">JUnit 5 + Mockito</span>
+    <span class="chip">H2 (tests)</span>
+    <span class="chip">Maven</span>
+    <span class="chip">OpenAPI / Swagger</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ===== PROJECT MAP ===== -->
+<section id="map">
+  <div class="sec-h"><span class="k">MAP</span><h2>Project Architecture &amp; Package Map</h2></div>
+  <p class="lead">A layered, module-based design. Request flow: <b>Controller → Service → Repository → MySQL</b>, with a JWT filter in front and a global exception handler around everything.</p>
+  <div class="tree">
+<span class="cmt">// HTTP request lifecycle</span>
+Client ──Bearer JWT──▶ <span class="d">JwtAuthFilter</span> ──▶ <span class="d">@RestController</span> ──▶ <span class="d">@Service</span> ──▶ <span class="d">JpaRepository</span> ──▶ MySQL
+                            │ (sets SecurityContext)      │ (@Valid DTO)     │ (@Transactional)
+                            ▼                             ▼
+                       401 if bad                  GlobalExceptionHandler ──▶ ApiResponse JSON
+
+src/main/java/com/civicdesk/
+├── <span class="f">CivicDeskApplication.java</span>          <span class="cmt"># @SpringBootApplication — entry point</span>
+├── common/
+│   ├── exception/  <span class="cmt"># custom exceptions + GlobalExceptionHandler (@RestControllerAdvice)</span>
+│   ├── response/   <span class="cmt"># ApiResponse, ErrorResponse, PageResponse (envelopes/DTOs)</span>
+│   ├── id/         <span class="cmt"># NumericStringSequenceGenerator (custom Hibernate id generator)</span>
+│   └── util/       <span class="cmt"># JwtUtil, SecurityContextUtil, ClientIpUtil</span>
+├── config/         <span class="cmt"># SecurityConfig, CorsConfig, JwtConfig, OpenApiConfig, DataSeeder</span>
+└── module/
+    ├── iam/        <span class="cmt"># entity · dto · repository · service · controller · security · enums</span>
+    └── auditlog/   <span class="cmt"># cross-module audit trail (AuditClient over RestClient)</span>
+src/main/resources/  <span class="cmt"># application.properties (+ -dev / -prod profiles)</span>
+src/test/java/...    <span class="cmt"># JUnit 5 + Mockito unit tests, @DataJpaTest, @WebMvcTest, integration</span>
+  </div>
+</section>
+
+<!-- ===== A. JAVA ===== -->
+<section id="java">
+  <div class="sec-h"><span class="k">A</span><h2>Java Core &amp; OOP</h2></div>
+  <p class="lead">Plain Java building blocks visible across <code>entity</code>, <code>service</code>, <code>dto</code> and <code>enums</code> packages.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">Class / Object / Constructor</td>
+        <td class="t">A class is a blueprint; an object is an instance; constructors initialise state. <span class="why"><b>Why:</b> constructors give us a single, valid way to build objects (used for DI too).</span></td>
+        <td class="w"><span class="file">module/iam/entity/User.java</span> — <code>new User()</code> in service; <span class="file">UserController.java</span> uses <b>constructor injection</b>: <code>UserController(UserService, AuditService)</code>.
+        <span class="q">What is the difference between a class and an object?</span></td></tr>
+      <tr><td class="n">2</td><td class="c">Encapsulation</td>
+        <td class="t">Private fields exposed via getters/setters. <span class="why"><b>Why:</b> protects invariants and hides the password hash from callers.</span></td>
+        <td class="w">All fields <code>private</code> in <span class="file">entity/User.java</span>; <span class="file">dto/response/UserResponse.java</span> deliberately has <b>no</b> <code>passwordHash</code> field — “never exposes the password hash”.</td></tr>
+      <tr><td class="n">3</td><td class="c">Inheritance</td>
+        <td class="t">Child reuses a parent (IS-A). <span class="why"><b>Why:</b> reuse framework behaviour and standard exception semantics.</span></td>
+        <td class="w"><span class="file">common/exception/ResourceNotFoundException.java</span> <code>extends RuntimeException</code>; <span class="file">security/JwtAuthFilter.java</span> <code>extends OncePerRequestFilter</code>.</td></tr>
+      <tr><td class="n">4</td><td class="c">Polymorphism</td>
+        <td class="t">One reference type, many implementations (runtime overriding). <span class="why"><b>Why:</b> code against interfaces, swap implementations freely.</span></td>
+        <td class="w"><span class="file">service/UserService.java</span> (interface) reference points to <span class="file">UserServiceImpl.java</span>; <code>@Override</code> on every impl method.</td></tr>
+      <tr><td class="n">5</td><td class="c">Abstraction</td>
+        <td class="t">Expose <i>what</i>, hide <i>how</i>, via interfaces/abstract types. <span class="why"><b>Why:</b> controller need not know the DB or business details.</span></td>
+        <td class="w"><span class="file">service/UserService.java</span>, <span class="file">service/AuthService.java</span> interfaces; <code>JpaRepository</code> abstracts all SQL.</td></tr>
+      <tr><td class="n">6</td><td class="c">Interface vs Abstract class</td>
+        <td class="t">Interface = pure contract (multiple); abstract class = partial base. <span class="why"><b>Why:</b> Spring beans are wired by interface for testability.</span></td>
+        <td class="w"><span class="file">repository/UserRepository.java</span> is an <b>interface</b> extending <code>JpaRepository</code> + <code>JpaSpecificationExecutor</code> — Spring generates the impl.</td></tr>
+      <tr><td class="n">7</td><td class="c">Enums</td>
+        <td class="t">Fixed set of named constants, optionally with behaviour. <span class="why"><b>Why:</b> roles/statuses are a closed set — type-safe, no magic strings.</span></td>
+        <td class="w"><span class="file">module/iam/enums/Role.java</span> (<code>CIT, FO, DS, ENG, CO, ADM</code>); <span class="file">enums/UserStatus.java</span> with <code>.getLabel()</code> / <code>normalize()</code>.</td></tr>
+      <tr><td class="n">8</td><td class="c">Collections (List/Map/Set)</td>
+        <td class="t">Reusable containers for groups of objects. <span class="why"><b>Why:</b> return many users; declare immutable allow-lists.</span></td>
+        <td class="w"><span class="file">UserServiceImpl.java</span>: <code>List.of(Role.FO, Role.ENG, Role.CO)</code> (immutable); <span class="file">JwtAuthFilter.java</span>: <code>List.of(new SimpleGrantedAuthority(...))</code>.</td></tr>
+      <tr><td class="n">9</td><td class="c">Exception handling</td>
+        <td class="t"><code>try/catch</code> + custom exceptions model failures. <span class="why"><b>Why:</b> turn domain errors into correct HTTP codes; never crash the caller.</span></td>
+        <td class="w"><span class="file">auditlog/client/AuditClient.java</span> catches <code>RuntimeException</code> and logs (audit is best-effort). 11 custom exceptions in <span class="file">common/exception/</span>.</td></tr>
+      <tr><td class="n">10</td><td class="c">Generics</td>
+        <td class="t">Parameterised types checked at compile time. <span class="why"><b>Why:</b> type-safe repositories and responses, no casting.</span></td>
+        <td class="w"><code>JpaRepository&lt;User, String&gt;</code>, <code>ResponseEntity&lt;ApiResponse&gt;</code>, <code>PageResponse&lt;UserResponse&gt;</code>, <code>Optional&lt;User&gt;</code>.</td></tr>
+      <tr><td class="n">11</td><td class="c">Annotations</td>
+        <td class="t">Metadata that frameworks read to add behaviour. <span class="why"><b>Why:</b> declarative wiring/validation/mapping instead of boilerplate code.</span></td>
+        <td class="w">Everywhere: <code>@Entity</code>, <code>@Service</code>, <code>@RestController</code>, <code>@Valid</code>, <code>@Transactional</code>, <code>@Test</code>.</td></tr>
+      <tr><td class="n">12</td><td class="c">Java 8+ (Stream / Lambda / Optional)</td>
+        <td class="t">Declarative data processing; <code>Optional</code> = null-safe box. <span class="why"><b>Why:</b> readable transforms and explicit “might be absent”.</span></td>
+        <td class="w"><span class="file">config/DataSeeder.java</span> <code>findAll().stream().map(...).filter(...).mapToInt(...).max()</code>; <span class="file">UserServiceImpl.java</span> <code>findById(id).orElseThrow(...)</code>.
+        <span class="q">Why prefer Optional over returning null?</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== B. SPRING CORE ===== -->
+<section id="core">
+  <div class="sec-h"><span class="k">B</span><h2>Spring Core &amp; Dependency Injection</h2></div>
+  <p class="lead">The container creates and wires every bean; this project uses <b>constructor injection</b> exclusively.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">IoC Container</td>
+        <td class="t">Spring (not you) instantiates, wires and manages objects. <span class="why"><b>Why:</b> loose coupling, central lifecycle, easy testing.</span></td>
+        <td class="w">Bootstrapped by <span class="file">CivicDeskApplication.java</span> → <code>SpringApplication.run(...)</code>.</td></tr>
+      <tr><td class="n">2</td><td class="c">Constructor Injection</td>
+        <td class="t">Dependencies passed via constructor into <code>final</code> fields. <span class="why"><b>Why:</b> immutable, non-null deps, trivially mockable in tests.</span></td>
+        <td class="w"><span class="file">UserServiceImpl.java</span>: <code>UserServiceImpl(UserRepository, DepartmentRepository)</code>; same pattern in every <code>*Impl</code> / controller. No field <code>@Autowired</code> used.</td></tr>
+      <tr><td class="n">3</td><td class="c">Stereotypes</td>
+        <td class="t"><code>@Service / @Repository / @RestController / @Component / @Configuration</code> mark beans by role. <span class="why"><b>Why:</b> component-scan picks them up; intent is explicit.</span></td>
+        <td class="w"><code>@Service</code> on <span class="file">UserServiceImpl.java</span>; <code>@Repository</code> on <span class="file">UserRepository.java</span>; <code>@Component</code> on <span class="file">util/JwtUtil.java</span>, <span class="file">DataSeeder.java</span>.</td></tr>
+      <tr><td class="n">4</td><td class="c">@Configuration &amp; @Bean</td>
+        <td class="t">Java config class; <code>@Bean</code> registers a manually built object. <span class="why"><b>Why:</b> wire framework objects we don’t own (encoder, filter chain).</span></td>
+        <td class="w"><span class="file">config/SecurityConfig.java</span>: <code>@Bean SecurityFilterChain</code>, <code>@Bean PasswordEncoder → BCryptPasswordEncoder(10)</code>; <span class="file">CorsConfig.java</span>, <span class="file">OpenApiConfig.java</span>.</td></tr>
+      <tr><td class="n">5</td><td class="c">Bean scope / Singleton</td>
+        <td class="t">Beans are singletons by default — one shared instance. <span class="why"><b>Why:</b> stateless services are cheap and thread-safe to share.</span></td>
+        <td class="w">All services/repos/utils are singletons managed by the container.</td></tr>
+      <tr><td class="n">6</td><td class="c">CommandLineRunner</td>
+        <td class="t">Runs code once after the context is ready. <span class="why"><b>Why:</b> seed the first ADM + departments before any request arrives.</span></td>
+        <td class="w"><span class="file">config/DataSeeder.java</span> <code>implements CommandLineRunner</code> → <code>run()</code> seeds data.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== C. MAVEN ===== -->
+<section id="maven">
+  <div class="sec-h"><span class="k">C</span><h2>Maven (Build &amp; Dependencies)</h2></div>
+  <p class="lead">Single source of truth: <span class="file">pom.xml</span> at the project root.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">Parent POM</td>
+        <td class="t">Inherit managed versions from <code>spring-boot-starter-parent</code>. <span class="why"><b>Why:</b> one Boot version (3.4.1) aligns all dependency versions.</span></td>
+        <td class="w"><span class="file">pom.xml</span> → <code>&lt;parent&gt;spring-boot-starter-parent 3.4.1&lt;/parent&gt;</code>, <code>&lt;java.version&gt;21&lt;/java.version&gt;</code>.</td></tr>
+      <tr><td class="n">2</td><td class="c">Starters</td>
+        <td class="t">Curated dependency bundles. <span class="why"><b>Why:</b> add a capability without hunting individual jars/versions.</span></td>
+        <td class="w"><code>starter-web</code>, <code>starter-security</code>, <code>starter-data-jpa</code>, <code>starter-validation</code>, <code>starter-test</code>.</td></tr>
+      <tr><td class="n">3</td><td class="c">Dependencies &amp; scope</td>
+        <td class="t"><code>compile</code> vs <code>runtime</code> vs <code>test</code> scope. <span class="why"><b>Why:</b> keep MySQL driver runtime-only and H2/test libs out of production.</span></td>
+        <td class="w"><code>mysql-connector-j</code> = <code>runtime</code>; <code>h2</code>, <code>spring-security-test</code> = <code>test</code>; <code>jjwt-api/impl/jackson 0.12.3</code> for JWT.</td></tr>
+      <tr><td class="n">4</td><td class="c">Build lifecycle</td>
+        <td class="t"><code>clean → compile → test → package → install</code>. <span class="why"><b>Why:</b> repeatable builds; tests gate packaging.</span></td>
+        <td class="w"><code>mvn clean package</code> builds the JAR; <code>mvn test</code> runs all JUnit tests; wrapper in <span class="file">.mvn/wrapper/</span> (<code>./mvnw</code>).</td></tr>
+      <tr><td class="n">5</td><td class="c">Plugin</td>
+        <td class="t">Extends the build. <span class="why"><b>Why:</b> produce a runnable “fat” JAR with embedded Tomcat.</span></td>
+        <td class="w"><span class="file">pom.xml</span> → <code>spring-boot-maven-plugin</code> in <code>&lt;build&gt;&lt;plugins&gt;</code>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== D. SPRING BOOT ===== -->
+<section id="boot">
+  <div class="sec-h"><span class="k">D</span><h2>Spring Boot 3</h2></div>
+  <p class="lead">Auto-configuration + externalised config. Server runs on <code>:8081</code> with context path <code>/civicDesk</code>.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">@SpringBootApplication</td>
+        <td class="t">= <code>@Configuration</code> + <code>@EnableAutoConfiguration</code> + <code>@ComponentScan</code>. <span class="why"><b>Why:</b> one annotation boots the whole app.</span></td>
+        <td class="w"><span class="file">CivicDeskApplication.java</span> — <code>main()</code> calls <code>SpringApplication.run(CivicDeskApplication.class, args)</code>.</td></tr>
+      <tr><td class="n">2</td><td class="c">Auto-configuration</td>
+        <td class="t">Beans configured from classpath + properties. <span class="why"><b>Why:</b> DataSource, JPA, Tomcat, Security wired with near-zero code.</span></td>
+        <td class="w">Adding <code>starter-data-jpa</code> + MySQL props auto-creates the <code>DataSource</code> &amp; <code>EntityManager</code>.
+        <span class="q">How does Boot decide which beans to auto-configure?</span></td></tr>
+      <tr><td class="n">3</td><td class="c">Embedded Tomcat</td>
+        <td class="t">Servlet container inside the JAR. <span class="why"><b>Why:</b> <code>java -jar</code> runs the API — no external server.</span></td>
+        <td class="w">Provided by <code>starter-web</code>; port/context from properties.</td></tr>
+      <tr><td class="n">4</td><td class="c">application.properties</td>
+        <td class="t">Externalised configuration. <span class="why"><b>Why:</b> change DB/port/secret without recompiling.</span></td>
+        <td class="w"><span class="file">resources/application.properties</span> — datasource URL, <code>server.port=8081</code>, <code>server.servlet.context-path=/civicDesk</code>, JWT, CORS.</td></tr>
+      <tr><td class="n">5</td><td class="c">Profiles</td>
+        <td class="t">Environment-specific config. <span class="why"><b>Why:</b> separate dev/prod/test settings.</span></td>
+        <td class="w"><span class="file">application-dev.properties</span>, <span class="file">application-prod.properties</span>, <span class="file">test/resources/application-test.properties</span> (H2).</td></tr>
+      <tr><td class="n">6</td><td class="c">@Value</td>
+        <td class="t">Inject a single property. <span class="why"><b>Why:</b> pull secrets/admin seed values from config.</span></td>
+        <td class="w"><span class="file">DataSeeder.java</span> <code>@Value("${app.admin.email}")</code>; <span class="file">AuthServiceImpl.java</span> <code>@Value("${app.jwt.expiry}")</code>.</td></tr>
+      <tr><td class="n">7</td><td class="c">@ConfigurationProperties</td>
+        <td class="t">Bind a group of properties to a typed bean. <span class="why"><b>Why:</b> group related JWT settings cleanly.</span></td>
+        <td class="w"><span class="file">config/JwtConfig.java</span> binds <code>app.jwt.*</code> (<code>secret</code>, <code>expiry</code>) used by <span class="file">JwtUtil.java</span>.</td></tr>
+      <tr><td class="n">8</td><td class="c">Env-var defaults</td>
+        <td class="t"><code>${VAR:default}</code> placeholder syntax. <span class="why"><b>Why:</b> 12-factor config — override by env in real deployments.</span></td>
+        <td class="w"><span class="file">application.properties</span> → <code>app.admin.email=${ADMIN_EMAIL:admin@civicdesk.gov}</code>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== E. REST ===== -->
+<section id="rest">
+  <div class="sec-h"><span class="k">E</span><h2>Spring REST API</h2></div>
+  <p class="lead">Controllers live in <code>module/iam/controller</code>; all responses wrapped in the <span class="file">ApiResponse</span> envelope.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">REST principles</td>
+        <td class="t">Stateless, resource URIs, correct HTTP verbs/status. <span class="why"><b>Why:</b> predictable, cacheable, scalable API; JWT keeps it stateless.</span></td>
+        <td class="w"><code>SessionCreationPolicy.STATELESS</code> in <span class="file">SecurityConfig.java</span>; resources like <code>/iam/users/{id}/status</code>.
+        <span class="q">Name the key REST constraints.</span></td></tr>
+      <tr><td class="n">2</td><td class="c">@RestController</td>
+        <td class="t"><code>@Controller</code> + <code>@ResponseBody</code> — returns JSON. <span class="why"><b>Why:</b> it’s a JSON API, not server-rendered HTML.</span></td>
+        <td class="w"><span class="file">controller/UserController.java</span>, <span class="file">AuthController.java</span>, <span class="file">DepartmentController.java</span>.</td></tr>
+      <tr><td class="n">3</td><td class="c">@RequestMapping + verb mappings</td>
+        <td class="t">Base path + <code>@GetMapping/@PostMapping/@PutMapping</code>. <span class="why"><b>Why:</b> map each verb to the right action.</span></td>
+        <td class="w"><span class="file">UserController.java</span> <code>@RequestMapping("/iam/users")</code>; <code>@GetMapping("/me")</code>, <code>@PostMapping</code>, <code>@PutMapping("/{id}/status")</code>.</td></tr>
+      <tr><td class="n">4</td><td class="c">@PathVariable / @RequestParam / @RequestBody</td>
+        <td class="t">Bind URL segment / query / JSON body. <span class="why"><b>Why:</b> cleanly map HTTP input to Java params.</span></td>
+        <td class="w"><span class="file">UserController.java</span>: <code>@PathVariable String id</code>; <code>@RequestParam(defaultValue="0") int page</code>; <code>@Valid @RequestBody CreateUserRequest</code>.</td></tr>
+      <tr><td class="n">5</td><td class="c">ResponseEntity + status codes</td>
+        <td class="t">Full control of body + HTTP status. <span class="why"><b>Why:</b> return 201 on create, 200 on read, etc.</span></td>
+        <td class="w"><span class="file">UserController.java</span>: <code>ResponseEntity.status(201).body(ApiResponse.of("User created...", null))</code>, <code>ResponseEntity.ok(ApiResponse.data(user))</code>.</td></tr>
+      <tr><td class="n">6</td><td class="c">DTO pattern</td>
+        <td class="t">Separate request/response objects from entities. <span class="why"><b>Why:</b> never leak entity internals (e.g. password hash); shape the contract.</span></td>
+        <td class="w">Requests in <span class="file">dto/request/</span> (<code>CreateUserRequest</code>, <code>StaffLoginRequest</code>…); responses in <span class="file">dto/response/</span> (<code>UserResponse</code> via <code>UserResponse.from(user)</code>).</td></tr>
+      <tr><td class="n">7</td><td class="c">Response envelope</td>
+        <td class="t">Consistent <code>{message?, data?}</code> shape. <span class="why"><b>Why:</b> frontend parses every response uniformly.</span></td>
+        <td class="w"><span class="file">common/response/ApiResponse.java</span> — <code>data()</code> / <code>of()</code> / <code>error()</code> factory methods; <code>@JsonInclude(NON_NULL)</code>.</td></tr>
+      <tr><td class="n">8</td><td class="c">Global exception handling</td>
+        <td class="t"><code>@RestControllerAdvice</code> + <code>@ExceptionHandler</code> centralise errors. <span class="why"><b>Why:</b> one place maps each exception → HTTP status; controllers stay clean.</span></td>
+        <td class="w"><span class="file">common/exception/GlobalExceptionHandler.java</span> — maps <code>ResourceNotFound→404</code>, <code>DuplicateEmail→409</code>, <code>Forbidden→403</code>, <code>AccountSuspended→423</code>, validation→400.</td></tr>
+      <tr><td class="n">9</td><td class="c">Pagination response</td>
+        <td class="t">Page metadata + content. <span class="why"><b>Why:</b> never dump the whole table to the client.</span></td>
+        <td class="w"><span class="file">common/response/PageResponse.java</span> — <code>PageResponse.from(page, UserResponse::from)</code> in <span class="file">UserServiceImpl.java</span>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== F. JPA ===== -->
+<section id="jpa">
+  <div class="sec-h"><span class="k">F</span><h2>Spring Data JPA &amp; Hibernate</h2></div>
+  <p class="lead">Entities in <code>module/iam/entity</code>; repositories are interfaces Spring implements at runtime.</p>
+  <div class="note"><b>Design note (important for viva):</b> this project models relationships by <b>ID reference</b> (e.g. <code>User.departmentId</code> is a plain <code>@Column</code>, not a <code>@ManyToOne</code> to <code>Department</code>). <b>Why:</b> it keeps modules loosely coupled and split-ready (microservice-friendly), avoids lazy-loading/N+1 surprises, and keeps JSON flat. So <code>@OneToMany/@ManyToOne/@JoinColumn</code> are <i>known concepts</i> but intentionally not used here.</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">ORM</td>
+        <td class="t">Map Java objects ↔ DB rows; Hibernate generates SQL. <span class="why"><b>Why:</b> work with objects, not hand-written SQL.</span></td>
+        <td class="w"><span class="file">entity/User.java</span> ↔ <code>users</code> table; Hibernate is the JPA provider (from <code>starter-data-jpa</code>).</td></tr>
+      <tr><td class="n">2</td><td class="c">@Entity / @Table / @Index</td>
+        <td class="t">Mark a persistent class, its table and indexes. <span class="why"><b>Why:</b> indexes speed up the role/status filters we query on.</span></td>
+        <td class="w"><span class="file">entity/User.java</span>: <code>@Entity @Table(name="users", indexes={@Index(... role,status ...)})</code>; <span class="file">entity/Department.java</span> → <code>departments</code>.</td></tr>
+      <tr><td class="n">3</td><td class="c">@Id / @GeneratedValue / custom generator</td>
+        <td class="t">Primary key + generation strategy. <span class="why"><b>Why:</b> human-friendly numeric string ids starting at 10000001.</span></td>
+        <td class="w"><span class="file">entity/User.java</span> uses <code>@GenericGenerator</code> → <span class="file">common/id/NumericStringSequenceGenerator.java</span>; <span class="file">Department.java</span> uses assigned ids (<code>DPT01</code>…).</td></tr>
+      <tr><td class="n">4</td><td class="c">@Column constraints</td>
+        <td class="t">Map fields with length/nullable/unique. <span class="why"><b>Why:</b> enforce DB-level integrity (unique email).</span></td>
+        <td class="w"><span class="file">entity/User.java</span>: <code>@Column(nullable=false, unique=true, length=150) email</code>; <code>updatable=false</code> on id.</td></tr>
+      <tr><td class="n">5</td><td class="c">@CreationTimestamp / @UpdateTimestamp</td>
+        <td class="t">Hibernate auto-fills audit timestamps. <span class="why"><b>Why:</b> track created/updated without manual code.</span></td>
+        <td class="w"><span class="file">entity/User.java</span>: <code>@CreationTimestamp createdAt</code>, <code>@UpdateTimestamp updatedAt</code>.</td></tr>
+      <tr><td class="n">6</td><td class="c">JpaRepository</td>
+        <td class="t">Ready CRUD: <code>save/findById/findAll/deleteById</code>. <span class="why"><b>Why:</b> no boilerplate DAO code.</span></td>
+        <td class="w"><span class="file">repository/UserRepository.java</span> <code>extends JpaRepository&lt;User, String&gt;</code> — <code>save()</code>, <code>findById()</code> used in services.</td></tr>
+      <tr><td class="n">7</td><td class="c">Derived query methods</td>
+        <td class="t">Spring builds SQL from method names. <span class="why"><b>Why:</b> express simple queries with zero SQL.</span></td>
+        <td class="w"><span class="file">UserRepository.java</span>: <code>findByEmail()</code>, <code>existsByEmail()</code>, <code>findByDepartmentIdAndStatus(...)</code>, <code>findByRole(...)</code>.</td></tr>
+      <tr><td class="n">8</td><td class="c">Specifications (dynamic queries)</td>
+        <td class="t">Composable <code>Specification&lt;T&gt;</code> predicates via Criteria API. <span class="why"><b>Why:</b> optional role+status+department filters without a method per combo.</span></td>
+        <td class="w"><span class="file">repository/spec/UserSpecifications.java</span> (<code>hasRole/hasStatus/inDepartment</code>) combined with <code>.and(...)</code> in <span class="file">UserServiceImpl.getUsers()</span>; repo extends <code>JpaSpecificationExecutor&lt;User&gt;</code>.</td></tr>
+      <tr><td class="n">9</td><td class="c">@Transactional</td>
+        <td class="t">Method runs in one DB transaction (commit/rollback). <span class="why"><b>Why:</b> creating a user + updating the department must be atomic.</span></td>
+        <td class="w"><span class="file">UserServiceImpl.createUser()</span> and <span class="file">AuthServiceImpl.register()/setPassword()</span> are <code>@Transactional</code>.
+        <span class="q">What triggers a rollback by default?</span></td></tr>
+      <tr><td class="n">10</td><td class="c">Pagination &amp; Sorting</td>
+        <td class="t"><code>Pageable</code>/<code>Page</code> fetch one page at a time. <span class="why"><b>Why:</b> performance — bounded result sets.</span></td>
+        <td class="w"><span class="file">UserServiceImpl.getUsers()</span>: <code>PageRequest.of(page,size)</code> → <code>userRepository.findAll(spec, pageable)</code> → <code>Page&lt;User&gt;</code>.</td></tr>
+      <tr><td class="n">11</td><td class="c">ddl-auto / dialect</td>
+        <td class="t">Hibernate schema generation + SQL dialect. <span class="why"><b>Why:</b> auto-evolve dev schema; emit MySQL-specific SQL.</span></td>
+        <td class="w"><span class="file">application.properties</span>: <code>spring.jpa.hibernate.ddl-auto=update</code>, <code>show-sql=true</code>, <code>dialect=MySQL8Dialect</code>.
+        <span class="q">Why is <code>update</code> unsafe in production?</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== G. SQL ===== -->
+<section id="sql">
+  <div class="sec-h"><span class="k">G</span><h2>MySQL &amp; ANSI SQL</h2></div>
+  <p class="lead">Hibernate generates the SQL; understanding what it emits is the viva focus. DB: <code>civicdesk</code> on <code>localhost:3306</code>.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">DDL / DML / DQL</td>
+        <td class="t">Define schema / change data / read data. <span class="why"><b>Why:</b> Hibernate issues all three for us.</span></td>
+        <td class="w">DDL auto-generated from <span class="file">entity/*.java</span>; DML/DQL from <code>save()</code>/<code>findAll()</code>. <code>show-sql=true</code> prints them.</td></tr>
+      <tr><td class="n">2</td><td class="c">SELECT / INSERT / UPDATE</td>
+        <td class="t">Core data statements. <span class="why"><b>Why:</b> CRUD on users/departments.</span></td>
+        <td class="w"><code>save(new User)</code> → INSERT; <code>setStatus()+save()</code> → UPDATE (<span class="file">UserServiceImpl.updateStatus()</span>); <code>findByEmail</code> → SELECT.</td></tr>
+      <tr><td class="n">3</td><td class="c">WHERE / ORDER BY</td>
+        <td class="t">Filter and sort rows. <span class="why"><b>Why:</b> role/status/department filtering &amp; paged ordering.</span></td>
+        <td class="w">Generated from <span class="file">UserSpecifications.java</span> predicates + <code>PageRequest</code> sort.</td></tr>
+      <tr><td class="n">4</td><td class="c">Primary Key</td>
+        <td class="t">Uniquely identifies a row. <span class="why"><b>Why:</b> stable identity for each user/department.</span></td>
+        <td class="w"><code>@Id userId</code> (<span class="file">User.java</span>), <code>@Id departmentId</code> (<span class="file">Department.java</span>).</td></tr>
+      <tr><td class="n">5</td><td class="c">Foreign Key (logical)</td>
+        <td class="t">Reference to another table’s PK. <span class="why"><b>Why:</b> here it’s a <i>logical</i> FK — <code>departmentId</code> stored as a column (see JPA design note).</span></td>
+        <td class="w"><span class="file">User.java</span> <code>departmentId</code> references <code>departments.departmentId</code> at the application level.</td></tr>
+      <tr><td class="n">6</td><td class="c">UNIQUE constraint</td>
+        <td class="t">No duplicate values in a column. <span class="why"><b>Why:</b> two users can’t share an email.</span></td>
+        <td class="w"><code>@Column(unique=true) email</code> + service guard <code>existsByEmail()</code> → <code>DuplicateEmailException</code> (409).</td></tr>
+      <tr><td class="n">7</td><td class="c">Indexes</td>
+        <td class="t">Speed up filtered lookups. <span class="why"><b>Why:</b> user listing filters by role/status often.</span></td>
+        <td class="w"><span class="file">User.java</span> <code>@Index</code> on <code>role</code>, <code>status</code>, and composite <code>(role, status)</code>.</td></tr>
+      <tr><td class="n">8</td><td class="c">Transactions (COMMIT/ROLLBACK)</td>
+        <td class="t">All-or-nothing unit of work (ACID). <span class="why"><b>Why:</b> consistency across multi-step writes.</span></td>
+        <td class="w">Driven by <code>@Transactional</code> service methods (Spring + Hibernate manage commit/rollback).</td></tr>
+      <tr><td class="n">9</td><td class="c">createDatabaseIfNotExist</td>
+        <td class="t">JDBC URL convenience flag. <span class="why"><b>Why:</b> first run creates the schema automatically in dev.</span></td>
+        <td class="w"><span class="file">application.properties</span>: <code>jdbc:mysql://localhost:3306/civicdesk?createDatabaseIfNotExist=true</code>.</td></tr>
+      <tr><td class="n">10</td><td class="c">H2 for tests</td>
+        <td class="t">In-memory SQL DB. <span class="why"><b>Why:</b> fast, isolated repository tests without a real MySQL.</span></td>
+        <td class="w"><span class="file">pom.xml</span> <code>h2 (test)</code> + <span class="file">test/resources/application-test.properties</span>; used by <span class="file">UserRepositoryTest.java</span>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== VALIDATION (real bonus) ===== -->
+<section id="valid">
+  <div class="sec-h"><span class="k">+</span><h2>Bean Validation (real in this project)</h2></div>
+  <p class="lead">Jakarta Validation guards every write endpoint at the boundary — failures become 400s automatically.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">@Valid + @RequestBody</td>
+        <td class="t">Triggers validation of the incoming DTO. <span class="why"><b>Why:</b> reject bad input before it hits business logic.</span></td>
+        <td class="w"><span class="file">UserController.java</span>: <code>createUser(@Valid @RequestBody CreateUserRequest req...)</code>.</td></tr>
+      <tr><td class="n">2</td><td class="c">Field constraints</td>
+        <td class="t"><code>@NotBlank @Email @Size @Pattern</code>. <span class="why"><b>Why:</b> declarative rules beside the field — readable and reusable.</span></td>
+        <td class="w"><span class="file">dto/request/CreateUserRequest.java</span>: <code>@Email email</code>, <code>@Pattern(^[6-9][0-9]{9}$) phone</code>, <code>@Pattern(DS|FO|ENG|CO) role</code>.</td></tr>
+      <tr><td class="n">3</td><td class="c">Custom constraint</td>
+        <td class="t">Your own annotation + validator. <span class="why"><b>Why:</b> validate a value is a member of an enum, reusably.</span></td>
+        <td class="w"><span class="file">module/auditlog/validation/EnumValid.java</span> + <span class="file">EnumValidator.java</span> (tested in <span class="file">EnumValidatorTest.java</span>).</td></tr>
+      <tr><td class="n">4</td><td class="c">Validation → 400</td>
+        <td class="t">Invalid args throw <code>MethodArgumentNotValidException</code>. <span class="why"><b>Why:</b> consistent error body listing field messages.</span></td>
+        <td class="w"><span class="file">GlobalExceptionHandler.java</span> handler joins field errors → <code>ApiResponse.error(...)</code> with 400.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== SECURITY (real bonus) ===== -->
+<section id="security">
+  <div class="sec-h"><span class="k">+</span><h2>Spring Security + JWT (real in this project)</h2></div>
+  <p class="lead">Stateless JWT auth with role-based access. Expect heavy viva questions here.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">SecurityFilterChain</td>
+        <td class="t">Declares what is public vs authenticated. <span class="why"><b>Why:</b> lock down everything except login/register/Swagger.</span></td>
+        <td class="w"><span class="file">config/SecurityConfig.java</span>: <code>permitAll()</code> for <code>/iam/auth/**</code> + Swagger; <code>anyRequest().authenticated()</code>; <code>STATELESS</code>; CSRF off.</td></tr>
+      <tr><td class="n">2</td><td class="c">JWT issue / verify</td>
+        <td class="t">Signed token carrying <code>userId</code>+<code>role</code>. <span class="why"><b>Why:</b> stateless auth — no server session store.</span></td>
+        <td class="w"><span class="file">common/util/JwtUtil.java</span> — HS256 <code>generateToken()</code>, <code>validateToken()</code>, <code>extractRole()</code>; secret/expiry from <span class="file">JwtConfig.java</span>.</td></tr>
+      <tr><td class="n">3</td><td class="c">Auth filter</td>
+        <td class="t">Runs once per request, sets the principal. <span class="why"><b>Why:</b> populate <code>SecurityContext</code> from the Bearer token; sliding refresh near expiry.</span></td>
+        <td class="w"><span class="file">module/iam/security/JwtAuthFilter.java</span> <code>extends OncePerRequestFilter</code>; registered <code>addFilterBefore(...)</code> in SecurityConfig.</td></tr>
+      <tr><td class="n">4</td><td class="c">Method security @PreAuthorize</td>
+        <td class="t">Role check per endpoint. <span class="why"><b>Why:</b> only ADM/DS create users; only ADM changes status.</span></td>
+        <td class="w"><span class="file">UserController.java</span>: <code>@PreAuthorize("hasAnyRole('ADM','DS')")</code>, <code>@PreAuthorize("hasRole('ADM')")</code>; enabled by <code>@EnableMethodSecurity</code>.</td></tr>
+      <tr><td class="n">5</td><td class="c">Password hashing</td>
+        <td class="t">BCrypt one-way hash. <span class="why"><b>Why:</b> never store plaintext passwords.</span></td>
+        <td class="w"><code>@Bean PasswordEncoder = BCryptPasswordEncoder(10)</code> (SecurityConfig); <code>encode()/matches()</code> in <span class="file">AuthServiceImpl.java</span>.</td></tr>
+      <tr><td class="n">6</td><td class="c">CORS</td>
+        <td class="t">Allow specific frontend origins. <span class="why"><b>Why:</b> Angular/React dev servers call the API cross-origin.</span></td>
+        <td class="w"><span class="file">config/CorsConfig.java</span> reads <code>app.cors.allowed-origins</code> from properties.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== LOMBOK ===== -->
+<section id="lombok">
+  <div class="sec-h"><span class="k">H</span><h2>Lombok</h2></div>
+  <div class="note"><b>Honest status:</b> Lombok is in the syllabus but is <b>NOT used</b> in this project — there is no Lombok dependency in <span class="file">pom.xml</span>. All getters/setters/constructors are written by hand (e.g. <span class="file">entity/User.java</span>, <span class="file">dto/response/UserResponse.java</span>). Know the annotations conceptually and be ready to say where they <i>would</i> apply.</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why it exists</th><th>Manual equivalent in this project</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">@Data / @Getter / @Setter</td>
+        <td class="t">Generates accessors, <code>toString</code>, <code>equals</code>, <code>hashCode</code>. <span class="why"><b>Why use it:</b> remove boilerplate.</span></td>
+        <td class="w">Hand-written getters/setters fill ~120 lines of <span class="file">entity/User.java</span> — exactly what <code>@Data</code> would replace.</td></tr>
+      <tr><td class="n">2</td><td class="c">@NoArgsConstructor / @AllArgsConstructor</td>
+        <td class="t">Generates constructors. <span class="why"><b>Why use it:</b> JPA needs a no-arg ctor; DTOs need full ctor.</span></td>
+        <td class="w">Written manually: <code>public User(){}</code> and <code>UserResponse(...)</code> all-args ctor.</td></tr>
+      <tr><td class="n">3</td><td class="c">@Builder</td>
+        <td class="t">Fluent object construction. <span class="why"><b>Why use it:</b> readable creation of objects with many fields.</span></td>
+        <td class="w">Not used; instead the <b>static factory</b> <code>UserResponse.from(user)</code> builds the DTO.</td></tr>
+      <tr><td class="n">4</td><td class="c">@Slf4j</td>
+        <td class="t">Injects a logger field. <span class="why"><b>Why use it:</b> skip the boilerplate logger line.</span></td>
+        <td class="w">Done manually instead: <code>private static final Logger log = LoggerFactory.getLogger(...)</code> (see Logging section).</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== LOGGING ===== -->
+<section id="log">
+  <div class="sec-h"><span class="k">I</span><h2>SLF4J &amp; Logging</h2></div>
+  <div class="note ok"><b>Real:</b> SLF4J is used via <code>LoggerFactory.getLogger(...)</code> (the manual form, since Lombok isn’t present).</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">Logger instantiation</td>
+        <td class="t">SLF4J facade; Logback backend (Boot default). <span class="why"><b>Why:</b> abstraction over the logging impl.</span></td>
+        <td class="w"><span class="file">config/DataSeeder.java</span> &amp; <span class="file">auditlog/client/AuditClient.java</span>: <code>private static final Logger log = LoggerFactory.getLogger(X.class);</code></td></tr>
+      <tr><td class="n">2</td><td class="c">Log levels</td>
+        <td class="t">TRACE&lt;DEBUG&lt;INFO&lt;WARN&lt;ERROR. <span class="why"><b>Why:</b> INFO for normal flow, WARN for recoverable problems.</span></td>
+        <td class="w"><span class="file">DataSeeder.java</span> <code>log.info("Seeded department '{}' as '{}'", ...)</code>; <span class="file">AuditClient.java</span> <code>log.warn("Failed to record audit entry ...")</code>.</td></tr>
+      <tr><td class="n">3</td><td class="c">Parameterised logging</td>
+        <td class="t"><code>{}</code> placeholders, lazy formatting. <span class="why"><b>Why:</b> avoids string concatenation cost when level is off.</span></td>
+        <td class="w">Used in both files above — values passed after the message string.
+        <span class="q">Why use <code>{}</code> instead of <code>"a"+b</code> in a log call?</span></td></tr>
+      <tr><td class="n">4</td><td class="c">SQL logging</td>
+        <td class="t">Hibernate prints generated SQL. <span class="why"><b>Why:</b> debug what queries actually run.</span></td>
+        <td class="w"><span class="file">application.properties</span>: <code>spring.jpa.show-sql=true</code>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== TEST ===== -->
+<section id="test">
+  <div class="sec-h"><span class="k">J</span><h2>JUnit 5 &amp; Mockito (TDD)</h2></div>
+  <p class="lead">Three layers of tests under <code>src/test/java</code>: unit (Mockito), slice (<code>@WebMvcTest</code>/<code>@DataJpaTest</code>), and full integration.</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">@ExtendWith(MockitoExtension)</td>
+        <td class="t">Wires Mockito into JUnit 5. <span class="why"><b>Why:</b> auto-init mocks per test.</span></td>
+        <td class="w"><span class="file">service/UserServiceImplTest.java</span> top-level annotation.</td></tr>
+      <tr><td class="n">2</td><td class="c">@Mock / @InjectMocks</td>
+        <td class="t">Fake collaborators injected into the unit under test. <span class="why"><b>Why:</b> test service logic in isolation, no DB.</span></td>
+        <td class="w"><span class="file">UserServiceImplTest.java</span>: <code>@Mock UserRepository</code>, <code>@Mock DepartmentRepository</code>, <code>@InjectMocks UserServiceImpl</code>.</td></tr>
+      <tr><td class="n">3</td><td class="c">when/thenReturn</td>
+        <td class="t">Stub a mock’s behaviour. <span class="why"><b>Why:</b> drive each branch deterministically.</span></td>
+        <td class="w"><code>when(userRepository.existsByEmail(anyString())).thenReturn(false)</code> in <span class="file">UserServiceImplTest.java</span>.</td></tr>
+      <tr><td class="n">4</td><td class="c">Assertions</td>
+        <td class="t"><code>assertEquals</code>, <code>assertThrows</code>. <span class="why"><b>Why:</b> verify both happy path and error path.</span></td>
+        <td class="w"><code>assertEquals("DS", res.getRole())</code>; <code>assertThrows(ForbiddenException.class, () -&gt; ...)</code>.</td></tr>
+      <tr><td class="n">5</td><td class="c">@WebMvcTest</td>
+        <td class="t">Loads only the web layer + MockMvc. <span class="why"><b>Why:</b> fast controller tests without the full context.</span></td>
+        <td class="w"><span class="file">controller/UserControllerTest.java</span>, <span class="file">AuthControllerTest.java</span>.</td></tr>
+      <tr><td class="n">6</td><td class="c">@DataJpaTest</td>
+        <td class="t">Loads only JPA + in-memory H2. <span class="why"><b>Why:</b> test queries/derived methods quickly.</span></td>
+        <td class="w"><span class="file">repository/UserRepositoryTest.java</span>, <span class="file">auditlog/repository/AuditLogRepositoryTest.java</span>.</td></tr>
+      <tr><td class="n">7</td><td class="c">@SpringBootTest (integration)</td>
+        <td class="t">Full application context. <span class="why"><b>Why:</b> end-to-end checks (RBAC, JWT, id generation).</span></td>
+        <td class="w"><span class="file">iam/integration/RbacIntegrationTest.java</span>, <span class="file">AuthIntegrationTest.java</span>, <span class="file">IdGenerationIntegrationTest.java</span>.</td></tr>
+      <tr><td class="n">8</td><td class="c">Validation tests</td>
+        <td class="t">Assert constraint messages fire. <span class="why"><b>Why:</b> lock the API contract for bad input.</span></td>
+        <td class="w"><span class="file">controller/UserRequestValidationTest.java</span>, <span class="file">AuthRequestValidationTest.java</span>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== DESIGN ===== -->
+<section id="design">
+  <div class="sec-h"><span class="k">K</span><h2>Design Patterns &amp; SOLID</h2></div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (one line)</th><th>Where applied in this project</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">S — Single Responsibility</td><td class="t">One reason to change per class.</td>
+        <td class="w">Controller = HTTP, Service = rules, Repository = data, <span class="file">JwtUtil</span> = tokens only.</td></tr>
+      <tr><td class="n">2</td><td class="c">O — Open/Closed</td><td class="t">Extend without modifying.</td>
+        <td class="w">New filters added via <code>UserSpecifications</code> factory methods, not by editing existing queries.</td></tr>
+      <tr><td class="n">3</td><td class="c">L — Liskov Substitution</td><td class="t">Subtype replaces base safely.</td>
+        <td class="w"><span class="file">UserServiceImpl</span> substitutes <code>UserService</code> wherever injected.</td></tr>
+      <tr><td class="n">4</td><td class="c">I — Interface Segregation</td><td class="t">Small, focused interfaces.</td>
+        <td class="w">Separate <span class="file">UserService</span>, <span class="file">AuthService</span>, <span class="file">DepartmentService</span> — no fat interface.</td></tr>
+      <tr><td class="n">5</td><td class="c">D — Dependency Inversion</td><td class="t">Depend on abstractions.</td>
+        <td class="w">Controllers depend on service <b>interfaces</b>; concrete impl injected by Spring.</td></tr>
+      <tr><td class="n">6</td><td class="c">Repository Pattern</td><td class="t">Abstracts data access.</td>
+        <td class="w"><span class="file">repository/UserRepository.java</span> via Spring Data JPA.</td></tr>
+      <tr><td class="n">7</td><td class="c">DTO Pattern</td><td class="t">Separate transfer objects.</td>
+        <td class="w"><span class="file">dto/request/*</span> and <span class="file">dto/response/*</span>.</td></tr>
+      <tr><td class="n">8</td><td class="c">Factory Method</td><td class="t">Static method builds objects.</td>
+        <td class="w"><code>UserResponse.from(user)</code>, <code>ApiResponse.data/of/error()</code>, <code>PageResponse.from(...)</code>.</td></tr>
+      <tr><td class="n">9</td><td class="c">Singleton</td><td class="t">One shared instance.</td>
+        <td class="w">Every Spring bean (default scope).</td></tr>
+      <tr><td class="n">10</td><td class="c">Strategy / Specification</td><td class="t">Interchangeable algorithms/predicates.</td>
+        <td class="w"><span class="file">UserSpecifications.java</span> — composable query predicates.</td></tr>
+      <tr><td class="n">11</td><td class="c">Filter / Chain of Responsibility</td><td class="t">Request passes through filters.</td>
+        <td class="w"><span class="file">JwtAuthFilter.java</span> in the servlet filter chain.</td></tr>
+      <tr><td class="n">12</td><td class="c">MVC</td><td class="t">Separate control / model / view.</td>
+        <td class="w">Controller → Service → Repository; JSON via <code>ApiResponse</code> is the “view”.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== DSA ===== -->
+<section id="dsa">
+  <div class="sec-h"><span class="k">L</span><h2>Data Structures &amp; Algorithms</h2></div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Exact file &amp; how it is used</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">List (immutable)</td>
+        <td class="t"><code>List.of(...)</code> fixed collection. <span class="why"><b>Why:</b> safe constant allow-lists.</span></td>
+        <td class="w"><span class="file">UserServiceImpl.java</span> <code>SUPERVISOR_CREATABLE_ROLES</code>; <span class="file">DataSeeder.java</span> department list.</td></tr>
+      <tr><td class="n">2</td><td class="c">Optional</td>
+        <td class="t">Null-safe container. <span class="why"><b>Why:</b> force callers to handle “not found”.</span></td>
+        <td class="w"><code>findById(id).orElseThrow(() -&gt; new ResourceNotFoundException(...))</code> across services.</td></tr>
+      <tr><td class="n">3</td><td class="c">Stream pipeline</td>
+        <td class="t"><code>map/filter/mapToInt/max</code>. <span class="why"><b>Why:</b> compute next department id declaratively.</span></td>
+        <td class="w"><span class="file">DataSeeder.nextDepartmentId()</span> — scans <code>DPT\d+</code> ids for the max, then increments.</td></tr>
+      <tr><td class="n">4</td><td class="c">Pagination (algorithmic)</td>
+        <td class="t">Offset/limit windowing. <span class="why"><b>Why:</b> bounded memory + response size.</span></td>
+        <td class="w"><code>PageRequest.of(page,size)</code> in <span class="file">UserServiceImpl.getUsers()</span>.</td></tr>
+      <tr><td class="n">5</td><td class="c">Index-backed lookup</td>
+        <td class="t">DB index ≈ O(log n) vs O(n) scan. <span class="why"><b>Why:</b> push filtering to indexed columns, not in-memory loops.</span></td>
+        <td class="w"><span class="file">User.java</span> <code>@Index</code> on role/status; filtering via Specifications at the DB.
+        <span class="q">Why filter in SQL instead of fetching all and filtering in Java?</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== AGILE ===== -->
+<section id="agile">
+  <div class="sec-h"><span class="k">M</span><h2>Agile, Git &amp; Jira</h2></div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory + Why we use it</th><th>Where / how in this project</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">Scrum / Sprints</td>
+        <td class="t">Iterative delivery with backlog &amp; retro. <span class="why"><b>Why:</b> ship the IAM module incrementally.</span></td>
+        <td class="w">IAM (Module 2.1) built feature-by-feature: auth → users → departments → audit log.</td></tr>
+      <tr><td class="n">2</td><td class="c">Jira (Epic/Story/Task/Bug)</td>
+        <td class="t">Work hierarchy &amp; defect tracking. <span class="why"><b>Why:</b> trace each endpoint to a requirement.</span></td>
+        <td class="w">e.g. “Staff login”, “RBAC on user creation”, “Audit trail” as stories.</td></tr>
+      <tr><td class="n">3</td><td class="c">Git feature-branch flow</td>
+        <td class="t">Branch per feature, merge via PR. <span class="why"><b>Why:</b> keep <code>main</code> stable; review before merge.</span></td>
+        <td class="w">Current branch <code>feature/iam</code> → merged to <code>main</code>; commits like <code>feat(iam): add audit-log detail endpoint</code>.</td></tr>
+      <tr><td class="n">4</td><td class="c">Conventional commits</td>
+        <td class="t"><code>feat/fix/docs(scope):</code> prefixes. <span class="why"><b>Why:</b> readable history &amp; easier changelogs.</span></td>
+        <td class="w">Seen in git log: <code>fix: AuditLog Module</code>, <code>docs: update README endpoints</code>.</td></tr>
+      <tr><td class="n">5</td><td class="c">.gitignore</td>
+        <td class="t">Exclude build artefacts/secrets. <span class="why"><b>Why:</b> never commit <code>target/</code> or local config.</span></td>
+        <td class="w">Ignores <code>target/</code>, IDE files; secrets come from env vars.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== CHEAT SHEET ===== -->
+<section id="cheat">
+  <div class="sec-h"><span class="k">★</span><h2>Layer → File → Concept Cheat-Sheet</h2></div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Layer</th><th>Representative file</th><th>Tech</th><th>Key annotations / concepts</th></tr></thead>
+    <tbody>
+      <tr><td>Entry</td><td><span class="file">CivicDeskApplication.java</span></td><td>Spring Boot</td><td><code>@SpringBootApplication</code></td></tr>
+      <tr><td>Entity</td><td><span class="file">module/iam/entity/User.java</span></td><td>JPA + Hibernate</td><td><code>@Entity @Table @Id @GeneratedValue @Column @Index</code></td></tr>
+      <tr><td>Repository</td><td><span class="file">repository/UserRepository.java</span></td><td>Spring Data JPA</td><td><code>JpaRepository</code>, <code>JpaSpecificationExecutor</code>, derived queries</td></tr>
+      <tr><td>Specifications</td><td><span class="file">repository/spec/UserSpecifications.java</span></td><td>JPA Criteria</td><td><code>Specification&lt;User&gt;</code>, <code>.and()</code></td></tr>
+      <tr><td>Service</td><td><span class="file">service/UserServiceImpl.java</span></td><td>Spring Core</td><td><code>@Service @Transactional</code>, constructor injection</td></tr>
+      <tr><td>Controller</td><td><span class="file">controller/UserController.java</span></td><td>Spring REST</td><td><code>@RestController @GetMapping @PreAuthorize</code>, <code>ResponseEntity</code></td></tr>
+      <tr><td>DTO</td><td><span class="file">dto/request/CreateUserRequest.java</span></td><td>Validation</td><td><code>@Valid @NotBlank @Email @Pattern</code></td></tr>
+      <tr><td>Errors</td><td><span class="file">exception/GlobalExceptionHandler.java</span></td><td>Spring REST</td><td><code>@RestControllerAdvice @ExceptionHandler</code></td></tr>
+      <tr><td>Security</td><td><span class="file">config/SecurityConfig.java</span>, <span class="file">security/JwtAuthFilter.java</span></td><td>Spring Security</td><td><code>SecurityFilterChain</code>, JWT, <code>BCrypt</code>, <code>STATELESS</code></td></tr>
+      <tr><td>Config</td><td><span class="file">resources/application.properties</span></td><td>Spring Boot</td><td><code>@Value @ConfigurationProperties</code>, profiles</td></tr>
+      <tr><td>Build</td><td><span class="file">pom.xml</span></td><td>Maven</td><td>parent, starters, scopes, boot plugin</td></tr>
+      <tr><td>Database</td><td>MySQL <code>civicdesk</code></td><td>MySQL 8</td><td>PK, unique, indexes, <code>ddl-auto</code></td></tr>
+      <tr><td>Logging</td><td><span class="file">config/DataSeeder.java</span></td><td>SLF4J</td><td><code>LoggerFactory.getLogger</code>, <code>log.info/warn</code></td></tr>
+      <tr><td>Tests</td><td><span class="file">service/UserServiceImplTest.java</span></td><td>JUnit 5 + Mockito</td><td><code>@Mock @InjectMocks @WebMvcTest @DataJpaTest @SpringBootTest</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== VIVA QA ===== -->
+<section id="viva">
+  <div class="sec-h"><span class="k">?</span><h2>Likely Viva Questions (with the project answer)</h2></div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Question</th><th>How to answer using THIS project</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="c">Walk me through a request.</td><td class="w"><code>JwtAuthFilter</code> validates the token → sets <code>SecurityContext</code> → <code>@PreAuthorize</code> checks role → <code>UserController</code> validates the DTO → <code>UserServiceImpl</code> (<code>@Transactional</code>) applies rules → <code>UserRepository</code> hits MySQL → <code>ApiResponse</code> JSON returned; errors flow through <code>GlobalExceptionHandler</code>.</td></tr>
+      <tr><td class="n">2</td><td class="c">Why constructor injection, not @Autowired fields?</td><td class="w">Immutable <code>final</code> deps, guaranteed non-null, and easy to construct in unit tests (see <code>UserServiceImplTest</code> with <code>@InjectMocks</code>).</td></tr>
+      <tr><td class="n">3</td><td class="c">Why no @ManyToOne between User and Department?</td><td class="w">Deliberate ID-reference design for loose coupling / future service split, flatter JSON, and no lazy-loading/N+1 surprises. Integrity is enforced in the service layer.</td></tr>
+      <tr><td class="n">4</td><td class="c">How is the API stateless?</td><td class="w"><code>SessionCreationPolicy.STATELESS</code> + JWT in the <code>Authorization</code> header; no server session. Near-expiry tokens are refreshed by <code>JwtAuthFilter</code>.</td></tr>
+      <tr><td class="n">5</td><td class="c">How do you keep create-user atomic?</td><td class="w"><code>@Transactional</code> on <code>createUser()</code> — saving the user and updating the department’s supervisor commit together or roll back together.</td></tr>
+      <tr><td class="n">6</td><td class="c">How are validation errors returned?</td><td class="w"><code>@Valid</code> throws <code>MethodArgumentNotValidException</code>; <code>GlobalExceptionHandler</code> joins field messages into a 400 <code>ApiResponse</code>.</td></tr>
+      <tr><td class="n">7</td><td class="c">How do you test without a real DB?</td><td class="w">Mockito mocks the repository for service unit tests; <code>@DataJpaTest</code> + H2 for repository tests; <code>@SpringBootTest</code> for integration.</td></tr>
+      <tr><td class="n">8</td><td class="c">Where are passwords stored?</td><td class="w">Only the BCrypt hash (<code>passwordHash</code>) is stored; <code>UserResponse</code> never exposes it.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p><b>Student note:</b> For every concept, answer in the pattern <b>What → Where (file) → Why</b>. The strongest answers name the exact file (e.g. <span class="file">UserServiceImpl.java</span>) and the reason behind the design choice — that’s what separates “knows the syllabus” from “built the project”.</p>
+  <p style="margin-top:8px;opacity:.75;">CivicDesk IAM · Module 2.1 · Spring Boot 3.4.1 · Java 21 · Detailed concept-to-file map for viva preparation.</p>
+</footer>
+
+<a href="#" class="top" title="Back to top">↑</a>
+
+</body>
+</html>

@@ -1,5 +1,10 @@
 package com.civicdesk.module.iam.service;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.civicdesk.common.exception.AccountInactiveException;
 import com.civicdesk.common.exception.AccountSuspendedException;
 import com.civicdesk.common.exception.BadCredentialsException;
@@ -9,22 +14,18 @@ import com.civicdesk.common.exception.ForbiddenException;
 import com.civicdesk.common.exception.PasswordNotSetException;
 import com.civicdesk.common.exception.ResourceNotFoundException;
 import com.civicdesk.common.util.JwtUtil;
+import com.civicdesk.module.auditlog.enums.AuditAction;
+import com.civicdesk.module.auditlog.enums.AuditModule;
+import com.civicdesk.module.auditlog.service.AuditService;
 import com.civicdesk.module.iam.dto.request.CitizenLoginRequest;
 import com.civicdesk.module.iam.dto.request.RegisterRequest;
 import com.civicdesk.module.iam.dto.request.SetPasswordRequest;
 import com.civicdesk.module.iam.dto.request.StaffLoginRequest;
-import com.civicdesk.module.auditlog.enums.AuditAction;
-import com.civicdesk.module.auditlog.enums.AuditModule;
-import com.civicdesk.module.auditlog.service.AuditService;
 import com.civicdesk.module.iam.dto.response.AuthResponse;
 import com.civicdesk.module.iam.entity.User;
 import com.civicdesk.module.iam.enums.Role;
 import com.civicdesk.module.iam.enums.UserStatus;
 import com.civicdesk.module.iam.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {

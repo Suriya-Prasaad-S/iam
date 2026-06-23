@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Project Interview Preparation Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --java:#e76f00;       --spring:#6db33f;     --maven:#b03a2e;
+    --boot:#2e86de;       --rest:#8e44ad;       --jpa:#e67e22;
+    --mysql:#1f77b4;      --lombok:#c0392b;     --slf4j:#16a085;
+    --junit:#27ae60;      --design:#d35400;     --dsa:#2c3e50;
+    --agile:#0984e3;
+    --ink:#1f2733;        --muted:#5b6573;      --line:#e3e8ef;
+    --bg:#f5f7fb;         --card:#ffffff;       --shadow:0 8px 24px rgba(20,30,55,.08);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;font-family:'Inter',system-ui,Segoe UI,Roboto,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Poppins','Inter',sans-serif;margin:0;}
+
+  /* ---------- NAVBAR ---------- */
+  .navbar{
+    position:sticky;top:0;z-index:999;background:rgba(17,24,39,.97);
+    backdrop-filter:blur(8px);color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.25);
+  }
+  .nav-inner{display:flex;align-items:center;gap:14px;padding:10px 18px;flex-wrap:wrap;}
+  .nav-brand{font-family:'Poppins';font-weight:800;font-size:1.05rem;white-space:nowrap;
+    background:linear-gradient(90deg,#ffd76b,#ff8a5c,#7ad9ff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .nav-links{display:flex;gap:6px;flex-wrap:wrap;}
+  .nav-links a{
+    color:#dfe6f0;text-decoration:none;font-size:.78rem;font-weight:600;
+    padding:5px 10px;border-radius:20px;transition:.18s;white-space:nowrap;
+  }
+  .nav-links a:hover{background:rgba(255,255,255,.15);color:#fff;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:radial-gradient(1200px 400px at 10% -10%,#3a4a7a 0%,transparent 60%),
+               linear-gradient(120deg,#111827,#1f2a4a 60%,#0f2533);
+    color:#fff;padding:54px 20px 60px;text-align:center;
+  }
+  .hero h1{font-size:2.5rem;letter-spacing:-.5px;
+    background:linear-gradient(90deg,#ffd76b,#ff8a5c,#7ad9ff,#a0ffcb);
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{max-width:760px;margin:14px auto 0;color:#c5cee0;font-size:1.02rem;}
+  .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:22px;}
+  .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+    padding:6px 13px;border-radius:30px;font-size:.78rem;font-weight:600;color:#eaf0fb;}
+
+  /* ---------- LAYOUT ---------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:30px 18px 60px;}
+  section{scroll-margin-top:76px;margin-bottom:34px;}
+
+  .sec-head{
+    display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:14px 14px 0 0;
+    color:#fff;box-shadow:var(--shadow);
+  }
+  .sec-head .ico{line-height:0;}
+  .ic{width:1em;height:1em;display:inline-block;vertical-align:-.15em;fill:none;
+    stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .sec-head .ico .ic{width:28px;height:28px;}
+  .nav-brand .ic{width:18px;height:18px;color:#ffd76b;}
+  .nav-links a .ic{width:14px;height:14px;margin-right:5px;}
+  .badge .ic{width:14px;height:14px;margin-right:5px;}
+  footer .ic{width:16px;height:16px;vertical-align:-.2em;color:#ffd76b;}
+  .sec-head h2{font-size:1.28rem;font-weight:700;}
+  .sec-head .tag{margin-left:auto;font-size:.72rem;font-weight:600;
+    background:rgba(255,255,255,.22);padding:4px 11px;border-radius:20px;}
+
+  .panel{background:var(--card);border-radius:0 0 14px 14px;box-shadow:var(--shadow);
+    overflow:hidden;border:1px solid var(--line);border-top:none;}
+
+  table{width:100%;border-collapse:collapse;font-size:.88rem;}
+  thead th{background:#f0f3f9;text-align:left;padding:11px 14px;font-weight:700;
+    color:#33405a;border-bottom:2px solid var(--line);font-size:.8rem;text-transform:uppercase;letter-spacing:.3px;}
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tbody tr:nth-child(even){background:#fafbfe;}
+  tbody tr:hover{background:#eef4ff;}
+  td.num{font-weight:700;color:var(--muted);width:38px;text-align:center;}
+  td.concept{font-weight:600;color:var(--ink);width:20%;}
+  td.theory{color:#3a4658;width:38%;}
+  td.where{color:#444f63;width:38%;}
+  code{background:#eef1f7;color:#9a3b8d;padding:1px 6px;border-radius:5px;
+    font-family:Consolas,Menlo,monospace;font-size:.82em;font-weight:600;}
+  .hint{display:block;margin-top:5px;font-style:italic;color:#7a8699;font-size:.78rem;
+    padding-left:19px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237a8699" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>') no-repeat left 4px / 13px 13px;}
+
+  /* color accents per section using left border on panel */
+  .acc-java .sec-head{background:linear-gradient(100deg,var(--java),#ffae5e);}
+  .acc-spring .sec-head{background:linear-gradient(100deg,var(--spring),#9fe06b);}
+  .acc-maven .sec-head{background:linear-gradient(100deg,var(--maven),#e07a6e);}
+  .acc-boot .sec-head{background:linear-gradient(100deg,var(--boot),#6fb6ff);}
+  .acc-rest .sec-head{background:linear-gradient(100deg,var(--rest),#c08ad8);}
+  .acc-jpa .sec-head{background:linear-gradient(100deg,var(--jpa),#f6b26b);}
+  .acc-mysql .sec-head{background:linear-gradient(100deg,var(--mysql),#6fb6e8);}
+  .acc-lombok .sec-head{background:linear-gradient(100deg,var(--lombok),#e07a6e);}
+  .acc-slf4j .sec-head{background:linear-gradient(100deg,var(--slf4j),#6fd6c2);}
+  .acc-junit .sec-head{background:linear-gradient(100deg,var(--junit),#7fe0a3);}
+  .acc-design .sec-head{background:linear-gradient(100deg,var(--design),#f6a05b);}
+  .acc-dsa .sec-head{background:linear-gradient(100deg,var(--dsa),#5a6b85);}
+  .acc-agile .sec-head{background:linear-gradient(100deg,var(--agile),#6fb6ff);}
+
+  /* ---------- CHEAT SHEET ---------- */
+  .cheat .sec-head{background:linear-gradient(100deg,#111827,#3a4a7a);}
+  .cheat table td{font-size:.9rem;}
+  .layer-pill{font-weight:700;color:#fff;padding:3px 10px;border-radius:8px;font-size:.8rem;display:inline-block;}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:#111827;color:#cbd5e6;text-align:center;padding:30px 20px;font-size:.86rem;}
+  footer b{color:#ffd76b;}
+  .top-link{position:fixed;right:18px;bottom:18px;background:#2e86de;color:#fff;
+    width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    text-decoration:none;font-size:1.3rem;box-shadow:var(--shadow);z-index:998;}
+
+  @media (max-width:720px){
+    .hero h1{font-size:1.8rem;}
+    td.concept,td.theory,td.where{width:auto;}
+    table{font-size:.8rem;}
+  }
+  /* ---------- PRINT ---------- */
+  @media print{
+    .navbar,.top-link,.badges{display:none !important;}
+    body{background:#fff;}
+    .hero{background:#1f2a4a !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .sec-head,.panel,thead th,tbody tr:nth-child(even),.layer-pill{
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    section{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SVG ICON SPRITE ============ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"/></symbol>
+  <symbol id="i-java" viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M7 1v3M11 1v3M15 1v3"/></symbol>
+  <symbol id="i-spring" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></symbol>
+  <symbol id="i-maven" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-2.4Z"/></symbol>
+  <symbol id="i-boot" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
+  <symbol id="i-rest" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-jpa" viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></symbol>
+  <symbol id="i-mysql" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+  <symbol id="i-lombok" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></symbol>
+  <symbol id="i-slf4j" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+  <symbol id="i-junit" viewBox="0 0 24 24"><path d="M9 2v6L4.6 17a2 2 0 0 0 1.8 3h11.2a2 2 0 0 0 1.8-3L15 8V2"/><path d="M9 2h6M7.5 14h9"/></symbol>
+  <symbol id="i-design" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="i-dsa" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6" rx=".5"/><rect x="12" y="7" width="3" height="10" rx=".5"/><rect x="17" y="13" width="3" height="4" rx=".5"/></symbol>
+  <symbol id="i-agile" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
+  <symbol id="i-cheat" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+</svg>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <span class="nav-brand"><svg class="ic"><use href="#i-cap"/></svg> Viva Prep</span>
+    <div class="nav-links">
+      <a href="#java"><svg class="ic"><use href="#i-java"/></svg>Java</a>
+      <a href="#spring"><svg class="ic"><use href="#i-spring"/></svg>Spring Core</a>
+      <a href="#maven"><svg class="ic"><use href="#i-maven"/></svg>Maven</a>
+      <a href="#boot"><svg class="ic"><use href="#i-boot"/></svg>Boot</a>
+      <a href="#rest"><svg class="ic"><use href="#i-rest"/></svg>REST</a>
+      <a href="#jpa"><svg class="ic"><use href="#i-jpa"/></svg>JPA</a>
+      <a href="#mysql"><svg class="ic"><use href="#i-mysql"/></svg>MySQL</a>
+      <a href="#lombok"><svg class="ic"><use href="#i-lombok"/></svg>Lombok</a>
+      <a href="#slf4j"><svg class="ic"><use href="#i-slf4j"/></svg>SLF4J</a>
+      <a href="#junit"><svg class="ic"><use href="#i-junit"/></svg>JUnit</a>
+      <a href="#design"><svg class="ic"><use href="#i-design"/></svg>Design</a>
+      <a href="#dsa"><svg class="ic"><use href="#i-dsa"/></svg>DSA</a>
+      <a href="#agile"><svg class="ic"><use href="#i-agile"/></svg>Agile</a>
+      <a href="#cheat"><svg class="ic"><use href="#i-cheat"/></svg>Cheat Sheet</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <h1>Project Interview Preparation Guide</h1>
+  <p>A complete concept-to-code map for a <b>Spring Boot 3 REST API</b> backend project — every theory point linked to exactly where and how it was used. Built for your external project viva &amp; interview.</p>
+  <div class="badges">
+    <span class="badge"><svg class="ic"><use href="#i-java"/></svg>Java + OOP</span>
+    <span class="badge"><svg class="ic"><use href="#i-spring"/></svg>Spring Core</span>
+    <span class="badge"><svg class="ic"><use href="#i-boot"/></svg>Spring Boot 3</span>
+    <span class="badge"><svg class="ic"><use href="#i-rest"/></svg>Spring REST</span>
+    <span class="badge"><svg class="ic"><use href="#i-jpa"/></svg>Spring Data JPA + Hibernate</span>
+    <span class="badge"><svg class="ic"><use href="#i-mysql"/></svg>MySQL</span>
+    <span class="badge"><svg class="ic"><use href="#i-lombok"/></svg>Lombok</span>
+    <span class="badge"><svg class="ic"><use href="#i-slf4j"/></svg>SLF4J</span>
+    <span class="badge"><svg class="ic"><use href="#i-junit"/></svg>JUnit 5 + Mockito</span>
+    <span class="badge"><svg class="ic"><use href="#i-design"/></svg>Design Patterns</span>
+    <span class="badge"><svg class="ic"><use href="#i-dsa"/></svg>DSA</span>
+    <span class="badge"><svg class="ic"><use href="#i-agile"/></svg>Agile + Git + Jira</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ============ A. JAVA ============ -->
+<section id="java" class="acc-java">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-java"/></svg></span><h2>A. Java Core &amp; OOP</h2><span class="tag">Foundation</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">Classes, Objects, Constructors</td><td class="theory">A class is a blueprint; an object is its instance; a constructor initializes the object's state.</td><td class="where">Every layer — <code>User</code> entity, <code>UserService</code>, <code>UserController</code>. Lombok generates constructors (<code>@AllArgsConstructor</code>).<span class="hint">Difference between class and object?</span></td></tr>
+      <tr><td class="num">2</td><td class="concept">Inheritance</td><td class="theory">A child class reuses fields/methods of a parent class (IS-A relationship).</td><td class="where">Custom exceptions extend <code>RuntimeException</code> in <code>ResourceNotFoundException.java</code>.</td></tr>
+      <tr><td class="num">3</td><td class="concept">Polymorphism</td><td class="theory">One interface, many forms — overriding (runtime) &amp; overloading (compile-time).</td><td class="where">Service interface reference points to its implementation; overridden <code>toString()/equals()</code> via Lombok.</td></tr>
+      <tr><td class="num">4</td><td class="concept">Abstraction</td><td class="theory">Hiding implementation, exposing only behaviour via interfaces/abstract classes.</td><td class="where"><code>UserService</code> interface hides logic from <code>UserController</code>; <code>JpaRepository</code> abstracts DB access.</td></tr>
+      <tr><td class="num">5</td><td class="concept">Encapsulation</td><td class="theory">Binding data + methods together; private fields exposed via getters/setters.</td><td class="where">All entity/DTO fields are <code>private</code> with Lombok <code>@Getter/@Setter</code>.<span class="hint">Why private fields?</span></td></tr>
+      <tr><td class="num">6</td><td class="concept">Interfaces &amp; Abstract Classes</td><td class="theory">Interface = pure contract; abstract class = partial implementation + contract.</td><td class="where"><code>UserRepository extends JpaRepository</code>; <code>UserService</code> interface implemented by <code>UserServiceImpl</code>.</td></tr>
+      <tr><td class="num">7</td><td class="concept">Collections (List, Map, Set)</td><td class="theory">Framework of reusable data structures for storing groups of objects.</td><td class="where">Service returns <code>List&lt;UserDto&gt;</code>; <code>Map</code> used for grouping; <code>Set</code> for <code>@OneToMany</code> child collections.</td></tr>
+      <tr><td class="num">8</td><td class="concept">Exception Handling</td><td class="theory"><code>try/catch/finally</code> handles runtime errors; custom exceptions model domain failures.</td><td class="where"><code>try/catch</code> in service; custom <code>ResourceNotFoundException</code> thrown and caught in <code>@ControllerAdvice</code>.</td></tr>
+      <tr><td class="num">9</td><td class="concept">Generics</td><td class="theory">Type-safe parameterized types — catch errors at compile time.</td><td class="where"><code>JpaRepository&lt;User, Long&gt;</code>, <code>ResponseEntity&lt;UserDto&gt;</code>, <code>List&lt;T&gt;</code>.</td></tr>
+      <tr><td class="num">10</td><td class="concept">Annotations</td><td class="theory">Metadata read by compiler/frameworks to drive behaviour.</td><td class="where">Everywhere — <code>@Entity</code>, <code>@Service</code>, <code>@GetMapping</code>, <code>@Test</code>.</td></tr>
+      <tr><td class="num">11</td><td class="concept">Java 8+ (Streams, Lambda, Optional)</td><td class="theory">Functional-style data processing; <code>Optional</code> avoids null checks.</td><td class="where">Service uses <code>stream().map(this::toDto).collect()</code>; <code>repository.findById()</code> returns <code>Optional</code>.<span class="hint">Why Optional over null?</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ B. SPRING CORE ============ -->
+<section id="spring" class="acc-spring">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-spring"/></svg></span><h2>B. Spring Core &amp; Dependency Injection</h2><span class="tag">IoC</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">IoC Container</td><td class="theory">Spring container creates, wires &amp; manages object (bean) lifecycle instead of you.</td><td class="where">Bootstrapped by <code>@SpringBootApplication</code> at app startup.<span class="hint">What is Inversion of Control?</span></td></tr>
+      <tr><td class="num">2</td><td class="concept">Dependency Injection</td><td class="theory">Container supplies a class's dependencies rather than the class creating them.</td><td class="where"><code>UserController</code> receives <code>UserService</code>; service receives repository via <b>constructor injection</b>.</td></tr>
+      <tr><td class="num">3</td><td class="concept">@Autowired / Constructor Injection</td><td class="theory">Marks an injection point; constructor injection is preferred (immutable, testable).</td><td class="where"><code>final</code> fields injected through constructor (auto via Lombok <code>@RequiredArgsConstructor</code>).</td></tr>
+      <tr><td class="num">4</td><td class="concept">Stereotype Annotations</td><td class="theory"><code>@Component/@Service/@Repository/@Controller</code> mark beans by role.</td><td class="where"><code>@RestController</code> on controller, <code>@Service</code> on service, <code>@Repository</code> on repo (implicit).</td></tr>
+      <tr><td class="num">5</td><td class="concept">Bean Lifecycle</td><td class="theory">Instantiate → populate → init (<code>@PostConstruct</code>) → use → destroy (<code>@PreDestroy</code>).</td><td class="where">All service/controller beans managed as singletons by the container.</td></tr>
+      <tr><td class="num">6</td><td class="concept">@Configuration &amp; @Bean</td><td class="theory">Java-based config class; <code>@Bean</code> registers a manually-created object as a bean.</td><td class="where">Used for custom beans (e.g. <code>ModelMapper</code>, Swagger/OpenAPI config).</td></tr>
+      <tr><td class="num">7</td><td class="concept">ApplicationContext</td><td class="theory">The advanced IoC container holding all beans &amp; configuration.</td><td class="where">Created automatically at startup; injected/available across the whole app.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ C. MAVEN ============ -->
+<section id="maven" class="acc-maven">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-maven"/></svg></span><h2>C. Maven (Build Tool)</h2><span class="tag">Build</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">pom.xml Structure</td><td class="theory">Project Object Model — declares groupId, artifactId, version, dependencies, plugins.</td><td class="where"><code>pom.xml</code> at project root defines the entire build.</td></tr>
+      <tr><td class="num">2</td><td class="concept">Dependencies &amp; Versioning</td><td class="theory">External libraries auto-downloaded; versions managed centrally.</td><td class="where"><code>spring-boot-starter-web</code>, <code>-data-jpa</code>, <code>mysql-connector-j</code>, <code>lombok</code> in <code>&lt;dependencies&gt;</code>.</td></tr>
+      <tr><td class="num">3</td><td class="concept">Build Lifecycle</td><td class="theory">Phases: <code>clean → compile → test → package → install → deploy</code>.</td><td class="where"><code>mvn clean package</code> builds the runnable JAR; <code>mvn test</code> runs JUnit tests.<span class="hint">What does mvn install do?</span></td></tr>
+      <tr><td class="num">4</td><td class="concept">Plugins</td><td class="theory">Extend the build (compiling, packaging, running).</td><td class="where"><code>spring-boot-maven-plugin</code> packages the executable fat JAR.</td></tr>
+      <tr><td class="num">5</td><td class="concept">Repositories</td><td class="theory">Local (<code>~/.m2</code>) caches jars; Maven Central is the remote source.</td><td class="where">Dependencies resolved from Maven Central into the local <code>.m2</code> repo.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ D. SPRING BOOT ============ -->
+<section id="boot" class="acc-boot">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-boot"/></svg></span><h2>D. Spring Boot 3</h2><span class="tag">Framework</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">@SpringBootApplication</td><td class="theory">Combines <code>@Configuration</code> + <code>@EnableAutoConfiguration</code> + <code>@ComponentScan</code>.</td><td class="where">On the main class <code>DemoApplication.java</code> — the app entry point.</td></tr>
+      <tr><td class="num">2</td><td class="concept">Auto-Configuration</td><td class="theory">Auto-configures beans based on classpath jars &amp; properties.</td><td class="where">JPA, DataSource &amp; Tomcat configured automatically from starters.<span class="hint">How does auto-config work?</span></td></tr>
+      <tr><td class="num">3</td><td class="concept">Embedded Tomcat</td><td class="theory">A servlet container bundled inside the JAR — no external server needed.</td><td class="where">Runs the REST API on the configured port via <code>java -jar</code>.</td></tr>
+      <tr><td class="num">4</td><td class="concept">application.properties</td><td class="theory">Central externalized configuration file.</td><td class="where"><code>src/main/resources/application.properties</code> — DB URL, port, JPA settings.</td></tr>
+      <tr><td class="num">5</td><td class="concept">Profiles</td><td class="theory">Environment-specific configs (<code>dev</code>, <code>test</code>, <code>prod</code>).</td><td class="where"><code>application-dev.properties</code> / activated via <code>spring.profiles.active</code>.</td></tr>
+      <tr><td class="num">6</td><td class="concept">Starter Dependencies</td><td class="theory">Curated dependency bundles (e.g. <code>starter-web</code>) to avoid version conflicts.</td><td class="where">Declared in <code>pom.xml</code> — web, data-jpa, test, validation starters.</td></tr>
+      <tr><td class="num">7</td><td class="concept">@Value &amp; @ConfigurationProperties</td><td class="theory">Inject single property / bind a group of properties to a POJO.</td><td class="where"><code>@Value("${server.port}")</code> for single values; config props for grouped settings.</td></tr>
+      <tr><td class="num">8</td><td class="concept">Spring Boot DevTools</td><td class="theory">Adds automatic restart &amp; live reload during development.</td><td class="where">Optional <code>spring-boot-devtools</code> dependency for faster dev loop.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ E. SPRING REST ============ -->
+<section id="rest" class="acc-rest">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-rest"/></svg></span><h2>E. Spring REST API</h2><span class="tag">Web Layer</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">REST Principles</td><td class="theory">Stateless, client-server, uniform interface, resource-based URIs, proper HTTP verbs.</td><td class="where">Endpoints like <code>/api/users/{id}</code> using correct verbs &amp; status codes.<span class="hint">Name the REST constraints.</span></td></tr>
+      <tr><td class="num">2</td><td class="concept">@RestController vs @Controller</td><td class="theory"><code>@RestController</code> = <code>@Controller</code> + <code>@ResponseBody</code> (returns JSON, not views).</td><td class="where"><code>UserController.java</code> annotated <code>@RestController</code>.</td></tr>
+      <tr><td class="num">3</td><td class="concept">Mapping Annotations</td><td class="theory"><code>@RequestMapping</code> base path; <code>@GetMapping/@PostMapping/@PutMapping/@DeleteMapping</code> map verbs.</td><td class="where">CRUD endpoints in <code>UserController</code> — GET list, POST create, PUT update, DELETE remove.</td></tr>
+      <tr><td class="num">4</td><td class="concept">@PathVariable / @RequestParam / @RequestBody</td><td class="theory">Bind URL path segment / query param / JSON body to method parameters.</td><td class="where"><code>@PathVariable Long id</code>, <code>@RequestParam page</code>, <code>@RequestBody UserDto</code>.</td></tr>
+      <tr><td class="num">5</td><td class="concept">ResponseEntity &amp; HTTP Status</td><td class="theory">Full control of response body + status + headers (200, 201, 404, 400, 500).</td><td class="where"><code>ResponseEntity.status(HttpStatus.CREATED).body(dto)</code> in controller.</td></tr>
+      <tr><td class="num">6</td><td class="concept">DTO Pattern</td><td class="theory">Data Transfer Objects decouple API contract from entities (security + flexibility).</td><td class="where"><code>UserRequestDto</code> / <code>UserResponseDto</code> map to/from <code>User</code> entity.<span class="hint">Why use DTOs not entities?</span></td></tr>
+      <tr><td class="num">7</td><td class="concept">Global Exception Handling</td><td class="theory"><code>@ControllerAdvice</code> + <code>@ExceptionHandler</code> centralize error responses.</td><td class="where"><code>GlobalExceptionHandler.java</code> returns clean JSON for <code>ResourceNotFoundException</code> &amp; validation errors.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ F. JPA / HIBERNATE ============ -->
+<section id="jpa" class="acc-jpa">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-jpa"/></svg></span><h2>F. Spring Data JPA &amp; Hibernate</h2><span class="tag">Persistence</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">ORM Concept</td><td class="theory">Object-Relational Mapping maps Java objects ↔ DB tables, avoiding raw SQL.</td><td class="where">Entities map to MySQL tables; Hibernate generates SQL automatically.</td></tr>
+      <tr><td class="num">2</td><td class="concept">@Entity, @Table, @Id, @GeneratedValue</td><td class="theory">Mark a persistent class, its table, primary key &amp; key-generation strategy.</td><td class="where"><code>User.java</code> — <code>@Entity @Table(name="users")</code>, <code>@Id @GeneratedValue(IDENTITY)</code>.</td></tr>
+      <tr><td class="num">3</td><td class="concept">@Column &amp; Relationships</td><td class="theory"><code>@Column</code> maps fields; <code>@OneToMany/@ManyToOne/@ManyToMany/@JoinColumn</code> map associations.</td><td class="where"><code>@ManyToOne</code> from child → parent with <code>@JoinColumn(name="user_id")</code>.</td></tr>
+      <tr><td class="num">4</td><td class="concept">JpaRepository / CrudRepository</td><td class="theory">Ready-made CRUD methods: <code>save, findAll, findById, deleteById</code>.</td><td class="where"><code>UserRepository extends JpaRepository&lt;User, Long&gt;</code> — zero SQL written.<span class="hint">Difference between the two?</span></td></tr>
+      <tr><td class="num">5</td><td class="concept">@Query (JPQL &amp; Native)</td><td class="theory">Custom queries — JPQL (entity-based) or native SQL.</td><td class="where">Derived queries like <code>findByEmail()</code> + <code>@Query</code> for complex lookups.</td></tr>
+      <tr><td class="num">6</td><td class="concept">@Transactional</td><td class="theory">Wraps methods in a DB transaction — all-or-nothing commit/rollback.</td><td class="where">On service methods that modify data (<code>createUser</code>, <code>updateUser</code>).</td></tr>
+      <tr><td class="num">7</td><td class="concept">Hibernate as JPA Provider</td><td class="theory">JPA is the spec; Hibernate is the default implementation behind Spring Data JPA.</td><td class="where">Hibernate generates &amp; executes SQL under the hood.</td></tr>
+      <tr><td class="num">8</td><td class="concept">Lazy vs Eager Loading</td><td class="theory">Lazy loads related data on access; eager loads immediately with the parent.</td><td class="where"><code>@ManyToOne(fetch=LAZY)</code> chosen to avoid the N+1 problem.<span class="hint">What is the N+1 problem?</span></td></tr>
+      <tr><td class="num">9</td><td class="concept">Cascade Types</td><td class="theory">Propagate operations (PERSIST, MERGE, REMOVE, ALL) from parent to children.</td><td class="where"><code>@OneToMany(cascade=CascadeType.ALL)</code> on parent entity.</td></tr>
+      <tr><td class="num">10</td><td class="concept">Pagination &amp; Sorting</td><td class="theory"><code>Pageable</code>/<code>Sort</code> fetch data page-by-page instead of all at once.</td><td class="where"><code>findAll(PageRequest.of(page,size,Sort.by("name")))</code> in service.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ G. MYSQL ============ -->
+<section id="mysql" class="acc-mysql">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-mysql"/></svg></span><h2>G. MySQL &amp; ANSI SQL</h2><span class="tag">Database</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">DDL vs DML vs DQL</td><td class="theory">DDL defines schema (CREATE/ALTER/DROP); DML changes data (INSERT/UPDATE/DELETE); DQL reads (SELECT).</td><td class="where">Hibernate generates DDL from entities; DML/DQL run on CRUD calls.</td></tr>
+      <tr><td class="num">2</td><td class="concept">CREATE / ALTER / DROP TABLE</td><td class="theory">Define and modify table structure.</td><td class="where">Auto-generated from <code>@Entity</code> classes via <code>ddl-auto</code>.</td></tr>
+      <tr><td class="num">3</td><td class="concept">SELECT / INSERT / UPDATE / DELETE</td><td class="theory">Core data manipulation statements.</td><td class="where">Triggered by <code>findAll</code>, <code>save</code>, <code>deleteById</code> repository methods.</td></tr>
+      <tr><td class="num">4</td><td class="concept">WHERE, ORDER BY, GROUP BY, HAVING</td><td class="theory">Filter, sort, aggregate &amp; filter aggregates.</td><td class="where">Generated for derived queries (<code>findByStatusOrderByName</code>) &amp; reports.</td></tr>
+      <tr><td class="num">5</td><td class="concept">JOINs (INNER / LEFT / RIGHT)</td><td class="theory">Combine rows from multiple tables on related columns.</td><td class="where">Hibernate emits JOINs across mapped relationships (user ↔ orders).<span class="hint">INNER vs LEFT join?</span></td></tr>
+      <tr><td class="num">6</td><td class="concept">Primary Key, Foreign Key, Constraints</td><td class="theory">PK uniquely identifies rows; FK links tables; constraints enforce integrity.</td><td class="where"><code>@Id</code> → PK; <code>@JoinColumn</code> → FK; <code>@Column(unique,nullable)</code> → constraints.</td></tr>
+      <tr><td class="num">7</td><td class="concept">Indexes</td><td class="theory">Speed up lookups on frequently-queried columns.</td><td class="where">Index on <code>email</code> via <code>@Column(unique=true)</code> / <code>@Index</code>.</td></tr>
+      <tr><td class="num">8</td><td class="concept">Transactions (COMMIT / ROLLBACK)</td><td class="theory">Group statements so they all succeed or all fail (ACID).</td><td class="where">Managed by <code>@Transactional</code> at the service layer.</td></tr>
+      <tr><td class="num">9</td><td class="concept">Stored Procedures (concept)</td><td class="theory">Pre-compiled SQL routines stored in the DB.</td><td class="where">Concept-aware; can be called via <code>@Procedure</code> if needed.</td></tr>
+      <tr><td class="num">10</td><td class="concept">JPA Auto DDL</td><td class="theory"><code>spring.jpa.hibernate.ddl-auto</code> = none/validate/update/create/create-drop.</td><td class="where">Set to <code>update</code> in <code>application.properties</code> during development.<span class="hint">Why never use create-drop in prod?</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ H. LOMBOK ============ -->
+<section id="lombok" class="acc-lombok">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-lombok"/></svg></span><h2>H. Lombok</h2><span class="tag">Boilerplate</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">@Data</td><td class="theory">Bundles getters, setters, <code>toString</code>, <code>equals</code>, <code>hashCode</code>.</td><td class="where">On DTOs &amp; entities to remove boilerplate.</td></tr>
+      <tr><td class="num">2</td><td class="concept">@Getter / @Setter</td><td class="theory">Generate accessor/mutator methods.</td><td class="where">Field-level control on entity classes.</td></tr>
+      <tr><td class="num">3</td><td class="concept">@NoArgsConstructor / @AllArgsConstructor</td><td class="theory">Generate empty &amp; full-arg constructors.</td><td class="where">Entities (JPA needs no-arg) &amp; DTOs.</td></tr>
+      <tr><td class="num">4</td><td class="concept">@Builder</td><td class="theory">Fluent builder pattern for object creation.</td><td class="where"><code>UserDto.builder().name("X").build()</code> in service &amp; tests.</td></tr>
+      <tr><td class="num">5</td><td class="concept">@Slf4j</td><td class="theory">Auto-creates a <code>private static final Logger log</code>.</td><td class="where">On service &amp; controller for logging.</td></tr>
+      <tr><td class="num">6</td><td class="concept">How It Works</td><td class="theory">Annotation processing injects code into bytecode at compile time.</td><td class="where">Requires Lombok plugin in IDE + dependency in <code>pom.xml</code>.<span class="hint">When does Lombok generate code?</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ I. SLF4J ============ -->
+<section id="slf4j" class="acc-slf4j">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-slf4j"/></svg></span><h2>I. SLF4J &amp; Logging</h2><span class="tag">Observability</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">Logging Levels</td><td class="theory">TRACE &lt; DEBUG &lt; INFO &lt; WARN &lt; ERROR — increasing severity.</td><td class="where"><code>log.info()</code> for flow, <code>log.error()</code> for failures.<span class="hint">Difference between INFO and DEBUG?</span></td></tr>
+      <tr><td class="num">2</td><td class="concept">SLF4J Facade</td><td class="theory">A logging abstraction; Logback is the default Boot implementation.</td><td class="where">Default logging backend in Spring Boot.</td></tr>
+      <tr><td class="num">3</td><td class="concept">Logger via @Slf4j</td><td class="theory">Lombok injects the logger so you skip <code>LoggerFactory.getLogger(...)</code>.</td><td class="where"><code>@Slf4j</code> on <code>UserServiceImpl</code> &amp; <code>GlobalExceptionHandler</code>.</td></tr>
+      <tr><td class="num">4</td><td class="concept">Where Logging Is Added</td><td class="theory">At entry/exit of key methods &amp; on caught exceptions.</td><td class="where">Service business methods &amp; exception handler log failures with context.</td></tr>
+      <tr><td class="num">5</td><td class="concept">Log Patterns / Config</td><td class="theory">Format, level &amp; output configured externally.</td><td class="where"><code>logging.level.*</code> &amp; pattern set in <code>application.properties</code>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ J. JUNIT / MOCKITO ============ -->
+<section id="junit" class="acc-junit">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-junit"/></svg></span><h2>J. JUnit 5 &amp; Mockito (TDD)</h2><span class="tag">Testing</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">TDD Cycle</td><td class="theory">Red (fail) → Green (pass) → Refactor — write test first.</td><td class="where">Followed for service-layer logic before implementation.<span class="hint">Explain Red-Green-Refactor.</span></td></tr>
+      <tr><td class="num">2</td><td class="concept">@Test, @BeforeEach, @AfterEach</td><td class="theory">Mark test methods &amp; setup/teardown run before/after each test.</td><td class="where"><code>UserServiceTest.java</code> initializes mocks in <code>@BeforeEach</code>.</td></tr>
+      <tr><td class="num">3</td><td class="concept">Assertions</td><td class="theory">Verify expected vs actual: <code>assertEquals</code>, <code>assertNotNull</code>, <code>assertThrows</code>.</td><td class="where">Validate returned DTOs &amp; thrown exceptions in tests.</td></tr>
+      <tr><td class="num">4</td><td class="concept">Mockito</td><td class="theory"><code>@Mock</code> fakes dependencies; <code>@InjectMocks</code> injects them; <code>when().thenReturn()</code> stubs; <code>verify()</code> checks calls.</td><td class="where">Mock <code>UserRepository</code>, inject into <code>UserServiceImpl</code> to test in isolation.</td></tr>
+      <tr><td class="num">5</td><td class="concept">@SpringBootTest vs @WebMvcTest vs @DataJpaTest</td><td class="theory">Full context / web-layer only / JPA-layer only — sliced tests run faster.</td><td class="where"><code>@WebMvcTest</code> for controller, <code>@DataJpaTest</code> for repository, <code>@SpringBootTest</code> for integration.</td></tr>
+      <tr><td class="num">6</td><td class="concept">Code Coverage</td><td class="theory">% of code exercised by tests (line/branch) — measured with JaCoCo.</td><td class="where">Tracked to ensure service &amp; controller logic is well-tested.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ K. DESIGN PATTERNS ============ -->
+<section id="design" class="acc-design">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-design"/></svg></span><h2>K. Design Patterns &amp; Principles</h2><span class="tag">Architecture</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">SOLID — S (Single Responsibility)</td><td class="theory">A class should have one reason to change.</td><td class="where">Controller handles HTTP, service handles logic, repo handles data — separate roles.</td></tr>
+      <tr><td class="num">2</td><td class="concept">SOLID — O (Open/Closed)</td><td class="theory">Open for extension, closed for modification.</td><td class="where">New service implementations added without changing the interface.</td></tr>
+      <tr><td class="num">3</td><td class="concept">SOLID — L (Liskov Substitution)</td><td class="theory">Subtypes must be replaceable for their base type.</td><td class="where"><code>UserServiceImpl</code> safely substitutes the <code>UserService</code> interface.</td></tr>
+      <tr><td class="num">4</td><td class="concept">SOLID — I (Interface Segregation)</td><td class="theory">Prefer small, specific interfaces over fat ones.</td><td class="where">Focused service/repository interfaces, no unused methods.</td></tr>
+      <tr><td class="num">5</td><td class="concept">SOLID — D (Dependency Inversion)</td><td class="theory">Depend on abstractions, not concrete classes.</td><td class="where">Controller depends on <code>UserService</code> interface, not the impl.<span class="hint">How does DI enable DIP?</span></td></tr>
+      <tr><td class="num">6</td><td class="concept">Singleton</td><td class="theory">One shared instance for the whole app.</td><td class="where">Every Spring bean is a singleton by default.</td></tr>
+      <tr><td class="num">7</td><td class="concept">Builder</td><td class="theory">Step-by-step construction of complex objects.</td><td class="where">Lombok <code>@Builder</code> on DTOs/entities.</td></tr>
+      <tr><td class="num">8</td><td class="concept">Repository Pattern</td><td class="theory">Abstracts data access behind a collection-like interface.</td><td class="where"><code>UserRepository</code> via Spring Data JPA.</td></tr>
+      <tr><td class="num">9</td><td class="concept">DTO Pattern</td><td class="theory">Transfer objects separate API model from persistence model.</td><td class="where">Request/Response DTOs in the controller layer.</td></tr>
+      <tr><td class="num">10</td><td class="concept">Factory (concept)</td><td class="theory">Centralizes object creation logic.</td><td class="where">Spring's <code>BeanFactory</code> creates beans; aware as a concept.</td></tr>
+      <tr><td class="num">11</td><td class="concept">MVC Pattern</td><td class="theory">Model–View–Controller separates data, presentation &amp; control.</td><td class="where">Spring MVC: Controller → Service → Repository, JSON as the "view".</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ L. DSA ============ -->
+<section id="dsa" class="acc-dsa">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-dsa"/></svg></span><h2>L. Data Structures &amp; Algorithms</h2><span class="tag">Problem Solving</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">List / ArrayList</td><td class="theory">Ordered, indexed, resizable collection — O(1) access.</td><td class="where">Service returns <code>List&lt;UserDto&gt;</code> from <code>findAll</code>.</td></tr>
+      <tr><td class="num">2</td><td class="concept">HashMap</td><td class="theory">Key–value store with O(1) average lookup.</td><td class="where">Used to group/map records (e.g. id → object) before responding.</td></tr>
+      <tr><td class="num">3</td><td class="concept">Optional</td><td class="theory">Container that may or may not hold a value — null-safe.</td><td class="where"><code>repository.findById(id)</code> returns <code>Optional&lt;User&gt;</code> → <code>orElseThrow</code>.</td></tr>
+      <tr><td class="num">4</td><td class="concept">Sorting / Filtering (Streams)</td><td class="theory">Declarative processing with <code>filter</code>, <code>sorted</code>, <code>map</code>.</td><td class="where">Stream pipelines transform entities → DTOs &amp; filter results.</td></tr>
+      <tr><td class="num">5</td><td class="concept">Time Complexity Awareness</td><td class="theory">Big-O reasoning to keep operations efficient.</td><td class="where">DB-side pagination &amp; indexed lookups instead of in-memory loops.<span class="hint">Why paginate at the DB, not in Java?</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ M. AGILE / GIT / JIRA ============ -->
+<section id="agile" class="acc-agile">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-agile"/></svg></span><h2>M. Agile, Git &amp; Jira</h2><span class="tag">Process</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>#</th><th>Concept</th><th>Theory (What is it?)</th><th>Where Used in Project</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="concept">Agile Scrum</td><td class="theory">Iterative delivery in sprints with backlog, daily stand-ups &amp; retrospectives.</td><td class="where">Features built sprint-by-sprint with reviews &amp; retrospectives.<span class="hint">What happens in a sprint retrospective?</span></td></tr>
+      <tr><td class="num">2</td><td class="concept">Jira (Epic, Story, Task, Bug)</td><td class="theory">Work hierarchy: Epic → Story → Task; Bug tracks defects.</td><td class="where">Each API feature tracked as a Story; defects logged as Bugs.</td></tr>
+      <tr><td class="num">3</td><td class="concept">Git Basics</td><td class="theory"><code>init, clone, add, commit, push, pull, branch, merge</code>.</td><td class="where">Daily version control of the codebase on GitHub.</td></tr>
+      <tr><td class="num">4</td><td class="concept">.gitignore</td><td class="theory">Excludes build artifacts &amp; secrets from version control.</td><td class="where">Ignores <code>target/</code>, IDE files &amp; local config.</td></tr>
+      <tr><td class="num">5</td><td class="concept">Feature Branch Workflow</td><td class="theory">Develop each feature on its own branch, then merge via Pull Request.</td><td class="where">Work done on <code>feature/*</code> branches merged into <code>main</code> after review.<span class="hint">Why not commit straight to main?</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ CHEAT SHEET ============ -->
+<section id="cheat" class="cheat">
+  <div class="sec-head"><span class="ico"><svg class="ic"><use href="#i-cheat"/></svg></span><h2>Summary Cheat-Sheet</h2><span class="tag">Quick Revision</span></div>
+  <div class="panel">
+  <table>
+    <thead><tr><th>Layer</th><th>Technology</th><th>Key Annotations / Concepts</th></tr></thead>
+    <tbody>
+      <tr><td><span class="layer-pill" style="background:var(--jpa)">Entity</span></td><td>JPA + Hibernate</td><td><code>@Entity</code>, <code>@Table</code>, <code>@Id</code>, <code>@GeneratedValue</code>, <code>@Column</code>, <code>@ManyToOne</code></td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--spring)">Repository</span></td><td>Spring Data JPA</td><td><code>JpaRepository</code>, <code>@Query</code>, derived queries, <code>Optional</code>, <code>Pageable</code></td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--spring)">Service</span></td><td>Spring Core</td><td><code>@Service</code>, <code>@Transactional</code>, constructor injection, business logic</td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--rest)">Controller</span></td><td>Spring REST</td><td><code>@RestController</code>, <code>@GetMapping</code>, <code>@RequestBody</code>, <code>ResponseEntity</code>, DTO</td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--rest)">Errors</span></td><td>Spring REST</td><td><code>@ControllerAdvice</code>, <code>@ExceptionHandler</code>, custom exceptions</td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--boot)">Config</span></td><td>Spring Boot</td><td><code>@SpringBootApplication</code>, <code>application.properties</code>, profiles, <code>@Value</code></td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--maven)">Build</span></td><td>Maven</td><td><code>pom.xml</code>, starters, lifecycle, <code>spring-boot-maven-plugin</code></td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--mysql)">Database</span></td><td>MySQL</td><td>DDL, DML, JOINs, PK, FK, constraints, transactions, <code>ddl-auto</code></td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--junit)">Testing</span></td><td>JUnit + Mockito</td><td><code>@Test</code>, <code>@Mock</code>, <code>@InjectMocks</code>, <code>@WebMvcTest</code>, <code>@DataJpaTest</code></td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--slf4j)">Logging</span></td><td>SLF4J + Lombok</td><td><code>@Slf4j</code>, <code>log.info()</code>, <code>log.error()</code>, logging levels</td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--lombok)">Boilerplate</span></td><td>Lombok</td><td><code>@Data</code>, <code>@Builder</code>, <code>@NoArgsConstructor</code>, <code>@AllArgsConstructor</code></td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--design)">Design</span></td><td>Patterns &amp; SOLID</td><td>Singleton, Builder, Repository, DTO, MVC, SOLID principles</td></tr>
+      <tr><td><span class="layer-pill" style="background:var(--agile)">Process</span></td><td>Agile + Git + Jira</td><td>Sprints, Stories, feature branches, commits, PRs</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <p><svg class="ic"><use href="#i-book"/></svg> <b>Student Note:</b> Revise each section top-to-bottom, then quiz yourself using the interviewer hints. Always answer in the pattern: <b>Theory → Where I used it → Why</b>.</p>
+  <p style="margin-top:10px;opacity:.7;">Project Interview Preparation Guide · Spring Boot 3 REST API Backend · Generated for viva readiness</p>
+</footer>
+
+<a href="#" class="top-link" title="Back to top"><svg class="ic" style="width:22px;height:22px;color:#fff;"><use href="#i-up"/></svg></a>
+
+</body>
+</html>
