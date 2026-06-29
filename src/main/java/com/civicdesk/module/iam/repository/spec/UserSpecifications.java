@@ -1,14 +1,10 @@
 package com.civicdesk.module.iam.repository.spec;
 
-import com.civicdesk.module.iam.entity.User;
 import org.springframework.data.jpa.domain.Specification;
 
-/**
- * Reusable, composable predicates for querying {@link User}. Each factory returns a
- * single-column filter; callers {@code .and(...)} them together to build the final query,
- * which keeps the optional role/status/department combinations from exploding into a
- * separate repository method per case.
- */
+import com.civicdesk.module.iam.entity.User;
+
+
 public final class UserSpecifications {
 
     private UserSpecifications() {

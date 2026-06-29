@@ -1,7 +1,5 @@
 package com.civicdesk.config;
 
-import com.civicdesk.module.iam.security.JwtAuthFilter;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -12,6 +10,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.civicdesk.module.iam.security.JwtAuthFilter;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableMethodSecurity
@@ -34,7 +36,6 @@ public class SecurityConfig {
                         .requestMatchers("/iam/auth/citizen/login").permitAll()
                         .requestMatchers("/iam/auth/staff/login").permitAll()
                         .requestMatchers("/iam/auth/setPassword").permitAll()
-                        // Swagger / OpenAPI UI
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
@@ -42,7 +43,6 @@ public class SecurityConfig {
                                 "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // Return a clean 401 (not the servlet default) when no/invalid token is present.
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(
                         (request, response, authException) ->
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))

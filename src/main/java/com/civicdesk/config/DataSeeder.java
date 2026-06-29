@@ -18,16 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/**
- * Seeds the very first ADM account directly into the database on application
- * startup â€” bypassing the API entirely, since no admin exists yet to call it.
- *
- * <p>Admin details come from {@code application.properties}, where each value is
- * driven by an OS environment variable with a local-development default (e.g.
- * {@code app.admin.email=${ADMIN_EMAIL:admin@civicdesk.gov}}). Override them in
- * any real environment by exporting {@code ADMIN_EMAIL}, {@code ADMIN_PASSWORD},
- * {@code ADMIN_NAME}, and {@code ADMIN_PHONE}.
- */
 @Component
 public class DataSeeder implements CommandLineRunner {
 
@@ -45,7 +35,6 @@ public class DataSeeder implements CommandLineRunner {
     @Value("${app.admin.phone}")
     private String adminPhone;
 
-    /** The six municipal departments CivicDesk operates. */
     private static final List<String> DEPARTMENTS = List.of(
             "Infrastructure",
             "Public Health",
@@ -86,12 +75,7 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
-    /**
-     * Builds the next sequential department id ({@code DPT01}, {@code DPT02}, …) by
-     * scanning existing ids for the highest {@code DPT<n>} suffix and incrementing it.
-     * Ids that don't match the pattern are ignored, so the sequence is stable even if
-     * other id forms ever coexist.
-     */
+    
     private String nextDepartmentId() {
         int max = departmentRepository.findAll().stream()
                 .map(Department::getDepartmentId)

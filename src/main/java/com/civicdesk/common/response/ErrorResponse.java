@@ -4,12 +4,6 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-/**
- * Alternative error envelope {@code {status, message, path, timestamp}} kept
- * available for callers/modules that prefer a path-aware error shape. The IAM
- * module's {@code GlobalExceptionHandler} uses the unified {@link ApiResponse},
- * but this type is provided for cross-module consistency.
- */
 @JsonPropertyOrder({"status", "message", "path", "timestamp"})
 public class ErrorResponse {
 
